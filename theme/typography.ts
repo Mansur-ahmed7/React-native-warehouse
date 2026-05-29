@@ -1,0 +1,73 @@
+export const typographyScale = [
+  {
+    className: "typography-h1",
+    label: "H1",
+    lineHeight: "1.2",
+    role: "Page / Screen Title",
+    size: "32px",
+    weight: "Bold",
+  },
+  {
+    className: "typography-h2",
+    label: "H2",
+    lineHeight: "1.3",
+    role: "Section Title",
+    size: "24px",
+    weight: "SemiBold",
+  },
+  {
+    className: "typography-h3",
+    label: "H3",
+    lineHeight: "1.3",
+    role: "Card / Module Title",
+    size: "20px",
+    weight: "SemiBold",
+  },
+  {
+    className: "typography-h4",
+    label: "H4",
+    lineHeight: "1.4",
+    role: "Subheading",
+    size: "16px",
+    weight: "Medium",
+  },
+  {
+    className: "typography-body-large",
+    label: "Body Large",
+    lineHeight: "1.6",
+    role: "Important content",
+    size: "16px",
+    weight: "Regular",
+  },
+  {
+    className: "typography-body-medium",
+    label: "Body Medium",
+    lineHeight: "1.6",
+    role: "Body text",
+    size: "14px",
+    weight: "Regular",
+  },
+  {
+    className: "typography-body-small",
+    label: "Body Small",
+    lineHeight: "1.6",
+    role: "Supporting text",
+    size: "13px",
+    weight: "Regular",
+  },
+  {
+    className: "typography-caption",
+    label: "Caption",
+    lineHeight: "1.4",
+    role: "Labels, meta text",
+    size: "11px",
+    weight: "Regular",
+  },
+] as const;
+
+export const fonts = {
+  bold: "Poppins-Bold",
+  medium: "Poppins-Medium",
+  regular: "Poppins-Regular",
+  semiBold: "Poppins-SemiBold",
+} as const;

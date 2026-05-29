@@ -1,0 +1,53 @@
+@theme {
+  --radius-card: 16px;
+  --radius-control: 12px;
+  --radius-swatch: 10px;
+
+  --spacing-screen-x: 24px;
+  --spacing-section: 24px;
+}
+
+@utility app-screen {
+  flex: 1;
+  background-color: var(--color-surface);
+}
+
+@utility app-container {
+  padding-left: var(--spacing-screen-x);
+  padding-right: var(--spacing-screen-x);
+  padding-top: 48px;
+  padding-bottom: 32px;
+  gap: var(--spacing-section);
+}
+
+@utility theme-card {
+  background-color: var(--color-background);
+  border-color: var(--color-border-theme);
+  border-radius: var(--radius-card);
+  border-width: 1px;
+  padding: 20px;
+}
+
+@utility theme-section-title {
+  color: var(--color-primary-blue);
+  font-family: var(--font-poppins-bold);
+  font-size: 16px;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+@utility theme-divider {
+  background-color: var(--color-border-theme);
+  height: 1px;
+  width: 100%;
+}
+
+@utility color-swatch {
+  border-radius: var(--radius-swatch);
+  height: 68px;
+  width: 68px;
+}
+
+@utility soft-shadow {
+  box-shadow: 0 10px 30px rgb(15 23 42 / 0.08);
+}

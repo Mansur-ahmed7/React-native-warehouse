@@ -1,0 +1,37 @@
+:root {
+  --warehouse-primary-blue: #2563eb;
+  --warehouse-deep-blue: #1e293b;
+  --warehouse-light-blue: #60a5fa;
+  --warehouse-success-green: #10b981;
+
+  --warehouse-success: #10b981;
+  --warehouse-warning: #f59e0b;
+  --warehouse-reserved: #f97316;
+  --warehouse-out-of-stock: #ef4444;
+  --warehouse-info: #3b82f6;
+
+  --warehouse-text-primary: #0f172a;
+  --warehouse-text-secondary: #334155;
+  --warehouse-border: #e2e8f0;
+  --warehouse-surface: #f6f7fb;
+  --warehouse-background: #ffffff;
+}
+
+@theme {
+  --color-primary-blue: var(--warehouse-primary-blue);
+  --color-deep-blue: var(--warehouse-deep-blue);
+  --color-light-blue: var(--warehouse-light-blue);
+  --color-success-green: var(--warehouse-success-green);
+
+  --color-success: var(--warehouse-success);
+  --color-warning: var(--warehouse-warning);
+  --color-reserved: var(--warehouse-reserved);
+  --color-out-of-stock: var(--warehouse-out-of-stock);
+  --color-info: var(--warehouse-info);
+
+  --color-text-primary: var(--warehouse-text-primary);
+  --color-text-secondary: var(--warehouse-text-secondary);
+  --color-border-theme: var(--warehouse-border);
+  --color-surface: var(--warehouse-surface);
+  --color-background: var(--warehouse-background);
+}
