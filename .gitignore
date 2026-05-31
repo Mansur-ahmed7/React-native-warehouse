@@ -32,6 +32,7 @@ expo-start*.err.log
 
 # local agent artifacts
 .agents/
+.claude/
 
 # macOS
 .DS_Store
