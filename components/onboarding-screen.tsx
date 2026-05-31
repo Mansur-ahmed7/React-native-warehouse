@@ -234,7 +234,7 @@ export function OnboardingScreen() {
         </View>
       </View>
 
-      <Link href="/" asChild>
+      <Link href="/(auth)/signup" asChild>
         <Pressable
           className="flex-row items-center justify-center rounded-[20px] bg-[#4A3DFF] px-6 active:bg-primary-blue"
           style={{ height: buttonHeight }}

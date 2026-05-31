@@ -1,0 +1,16 @@
+export const MODELS_BY_BRAND: Record<string, string[]> = {
+  Toyota: ["Camry", "Corolla", "RAV4", "Hilux", "Land Cruiser", "Yaris"],
+  Kia: ["Sportage", "Sorento", "Rio", "Optima", "Cerato", "Picanto"],
+  Hyundai: ["Elantra", "Sonata", "Tucson", "Santa Fe", "Accent", "i30"],
+  BMW: ["3 Series", "5 Series", "X5", "7 Series", "X3", "320i"],
+  Audi: ["A4", "A6", "Q5", "A3", "Q7", "A8"],
+  Mercedes: ["C-Class", "E-Class", "S-Class", "GLC", "GLE", "CLA"],
+  Nissan: ["Sunny", "Patrol", "Altima", "Sentra", "X-Trail", "Pathfinder"],
+  Honda: ["Civic", "Accord", "CR-V", "City", "Fit"],
+  Mitsubishi: ["Lancer", "Pajero", "Outlander", "ASX", "L200"],
+  Volkswagen: ["Golf", "Passat", "Tiguan", "Jetta", "Polo"],
+  Ford: ["Focus", "Explorer", "Mustang", "Escape", "Ranger"],
+  Chevrolet: ["Cruze", "Tahoe", "Malibu", "Camaro", "Equinox"],
+  Mazda: ["Mazda 3", "Mazda 6", "CX-5", "CX-9", "Mazda 2"],
+  Subaru: ["Impreza", "Forester", "Outback", "XV", "Legacy"],
+};
