@@ -1,0 +1,6 @@
+Court of Claude submission package
+
+Attach: court-of-claude/proposal.pdf
+Proposal text (source): court-of-claude/proposal.md
+
+Important: The proposal ends with the required phrase.
