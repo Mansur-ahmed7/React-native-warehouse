@@ -1,52 +1,80 @@
-# React-native-warehouse
+# Warehouse (Expo + React Native)
 
-# Welcome to your Expo app 👋
+Mobile-first warehouse / auto-parts inventory app built with Expo Router.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## What’s inside
 
-## Get started
+- **Inventory**: browse items, view stock, manage part details (including compatible cars).
+- **Barcode scanner**: scan a part number to find items fast (Expo Camera).
+- **Sale flow**: add items to cart, complete a sale, and show a receipt overlay.
+- **Reports**: basic reporting screens for quick insights.
+- **Onboarding + Auth routes**: simple app flow scaffolding.
 
-1. Install dependencies
+> Note: current authentication is a local mock (see `store/useAuthStore.ts`). Data is stored locally using Zustand + AsyncStorage.
 
-   ```bash
-   npm install
-   ```
+## Screenshots
 
-2. Start the app
+<p>
+  <img src="prompt_material/Inventory%20management%20app%20interface%20design.png" width="260" />
+  <img src="prompt_material/05Sales%20transaction%20summary%20on%20mobile%20app.png" width="260" />
+  <img src="prompt_material/04Barcode%20scanner%20app%20interface%20design.png" width="260" />
+</p>
 
-   ```bash
-   npx expo start
-   ```
+## Tech stack
 
-In the output, you'll find options to open the app in a
+- Expo SDK 54 + Expo Router
+- React Native
+- NativeWind (Tailwind-style classes)
+- Zustand + AsyncStorage
+- Expo Camera / Print / Sharing
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Running locally
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Prerequisites
 
-## Get a fresh project
+- Node.js 18+ recommended
+- Expo CLI (optional)
 
-When you're ready, run:
+### Install
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Start
 
-## Learn more
+```bash
+npm run start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Common shortcuts:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npm run android
+npm run ios
+npm run web
+```
 
-## Join the community
+### Lint
 
-Join our community of developers creating universal apps.
+```bash
+npm run lint
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Project structure
+
+- `app/`: Expo Router routes (file-based navigation)
+- `components/`: UI + feature tabs (Inventory, Scanner, Sale, Reports, Settings)
+- `store/`: Zustand stores
+- `data/`: seed/sample data
+- `types/`: shared types
+
+## Submission / review checklist
+
+- No secrets committed (API keys/tokens)
+- No local logs/build outputs committed (`.expo/`, `expo-start*.log` are ignored)
+- Clear steps to run from a fresh clone
+
+## License
+
+MIT — see `LICENSE`.
