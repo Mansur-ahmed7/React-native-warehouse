@@ -31,9 +31,6 @@ export default function RestockModal({ visible, onClose, item }: RestockModalPro
   const t = {
     title: isKu ? "دابینکردنەوە" : "Restock",
     unitsReceived: isKu ? "بڕی وەرگیراو" : "UNITS RECEIVED",
-    supplier: isKu ? "دابینکەر" : "SUPPLIER",
-    supplierPlaceholder: isKu ? "ناوی دابینکەر" : "Supplier name",
-    supplierHint: isKu ? "دەستکاری بکە ئەگەر لە دابینکەرێکی ترەوەیە" : "Edit if restocking from different supplier",
     buyPrice: isKu ? "نرخی کڕین" : "BUY PRICE",
     buyPricePlaceholder: isKu ? "0.00" : "0.00",
     buyPriceHint: isKu ? "دەستکاری بکە ئەگەر نرخ گۆڕاوە" : "Update if price has changed",
@@ -60,7 +57,6 @@ export default function RestockModal({ visible, onClose, item }: RestockModalPro
 
   // Form States
   const [units, setUnits] = useState(10);
-  const [supplier, setSupplier] = useState("");
   const [buyPrice, setBuyPrice] = useState("");
   const [sellPrice, setSellPrice] = useState("");
   const [currency, setCurrency] = useState<"USD" | "IQD">("USD");
@@ -69,7 +65,6 @@ export default function RestockModal({ visible, onClose, item }: RestockModalPro
   useEffect(() => {
     if (item) {
       setUnits(10);
-      setSupplier(item.supplier || "");
       setBuyPrice(String(item.buyPriceUSD || ""));
       setSellPrice(item.sellPriceIQD ? item.sellPriceIQD.toLocaleString() : "");
       setCurrency("USD");
@@ -96,14 +91,7 @@ export default function RestockModal({ visible, onClose, item }: RestockModalPro
 
   if (!item) return null;
 
-  // Handle Stepper
-  const handleIncrement = () => {
-    setUnits((prev) => Math.min(999, prev + 1));
-  };
 
-  const handleDecrement = () => {
-    setUnits((prev) => Math.max(1, prev - 1));
-  };
 
   // Profit Calculation
   const calcProfit = (buyStr: string, sellStr: string, curr: "USD" | "IQD") => {
@@ -234,25 +222,22 @@ export default function RestockModal({ visible, onClose, item }: RestockModalPro
               contentContainerStyle={styles.scrollContent}
               style={styles.scrollView}
             >
-              {/* Stepper Field */}
-              <Text style={[styles.label, isKu ? styles.rtlText : undefined]}>{t.unitsReceived}</Text>
-              <View style={[styles.stepperContainer, isKu ? styles.rtlRow : undefined]}>
-                <Pressable style={styles.stepperButton} onPress={handleDecrement}>
-                  <Ionicons name="remove" size={20} color="#475569" />
-                </Pressable>
-                <TextInput
-                  value={String(units)}
-                  onChangeText={(text) => {
-                    const clean = text.replace(/[^0-9]/g, "");
-                    setUnits(clean ? parseInt(clean) : 0);
-                  }}
-                  keyboardType="number-pad"
-                  style={styles.stepperValue}
-                  selectTextOnFocus={true}
-                />
-                <Pressable style={styles.stepperButton} onPress={handleIncrement}>
-                  <Ionicons name="add" size={20} color="#0066FF" />
-                </Pressable>
+              {/* Units Received Field */}
+              <View style={styles.fieldContainer}>
+                <Text style={[styles.label, isKu ? styles.rtlText : undefined]}>{t.unitsReceived}</Text>
+                <View style={[styles.inputRow, isKu ? styles.rtlRow : undefined]}>
+                  <TextInput
+                    value={units === 0 ? "" : String(units)}
+                    onChangeText={(text) => {
+                      const clean = text.replace(/[^0-9]/g, "");
+                      setUnits(clean ? parseInt(clean) : 0);
+                    }}
+                    keyboardType="number-pad"
+                    style={[styles.textInputWithPrefix, isKu ? styles.rtlText : undefined]}
+                    placeholder="0"
+                    placeholderTextColor="#9CA3AF"
+                  />
+                </View>
               </View>
 
               {/* Buy Price Field */}
