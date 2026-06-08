@@ -92,6 +92,12 @@
         "projectId": "10672464-bac5-426c-b0b6-17c2bbaa79ab"
       }
     },
-    "owner": "xv7lc"
+    "owner": "xv7lc",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/10672464-bac5-426c-b0b6-17c2bbaa79ab"
+    }
   }
 }
