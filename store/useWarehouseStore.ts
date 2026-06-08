@@ -17,6 +17,14 @@ import {
   TabName,
   Theme,
 } from "../types/inventory";
+import {
+  getParts,
+  createPart,
+  updatePartInFirestore,
+  deletePartFromFirestore,
+} from "../lib/api/parts";
+import { getCustomers, updateCustomerInFirestore } from "../lib/api/customers";
+import { getSalesHistory, createSaleRecord } from "../lib/api/sales";
 
 type WarehouseBackupV1 = {
   version: 1;
@@ -83,6 +91,9 @@ interface WarehouseStore {
   // Backup actions
   exportBackup: () => Promise<boolean>;
   importBackup: () => Promise<boolean>;
+
+  // Sync actions
+  syncFromFirestore: () => Promise<void>;
 }
 
 export const useWarehouseStore = create<WarehouseStore>()(
@@ -163,6 +174,11 @@ export const useWarehouseStore = create<WarehouseStore>()(
           set((state) => ({
             parts: [completePart, ...state.parts],
           }));
+
+          createPart(completePart).catch((err) =>
+            console.error("Firestore createPart error:", err),
+          );
+
           return true;
         } catch (error) {
           console.error("Failed to add part:", error);
@@ -218,6 +234,11 @@ export const useWarehouseStore = create<WarehouseStore>()(
               return p;
             }),
           }));
+
+          updatePartInFirestore(id, updates).catch((err) =>
+            console.error("Firestore updatePart error:", err),
+          );
+
           return true;
         } catch (error) {
           console.error("Failed to update part:", error);
@@ -232,6 +253,10 @@ export const useWarehouseStore = create<WarehouseStore>()(
             parts: state.parts.filter((p) => p.id !== id),
             cart: state.cart.filter((c) => c.partId !== id),
           }));
+
+          deletePartFromFirestore(id).catch((err) =>
+            console.error("Firestore deletePart error:", err),
+          );
         } catch (error) {
           console.error("Failed to delete part:", error);
           get().triggerToast("✗ Failed to delete part", true);
@@ -406,6 +431,19 @@ export const useWarehouseStore = create<WarehouseStore>()(
             cart: [], // Clear shopping cart
           }));
 
+          createSaleRecord(newRecord).catch((err) =>
+            console.error("Firestore createSaleRecord error:", err),
+          );
+
+          updatedParts.forEach((p) => {
+            const inCart = cart.find((item) => item.partId === p.id);
+            if (inCart) {
+              updatePartInFirestore(p.id, { quantity: p.quantity, status: p.status }).catch((err) =>
+                console.error("Firestore updatePart stock error:", err),
+              );
+            }
+          });
+
           get().triggerToast("✓ Sale completed successfully!");
           return true;
         } catch (error) {
@@ -423,6 +461,10 @@ export const useWarehouseStore = create<WarehouseStore>()(
             ),
           }));
           get().triggerToast("✓ Customer balance settled successfully");
+
+          updateCustomerInFirestore(customerId, { balance: 0 }).catch((err) =>
+            console.error("Firestore settleCustomerDebt error:", err),
+          );
         } catch (error) {
           console.error("Debt settlement failed:", error);
         }
@@ -602,6 +644,24 @@ export const useWarehouseStore = create<WarehouseStore>()(
           console.error("Failed to import backup:", error);
           get().triggerToast("✗ Failed to import backup", true);
           return false;
+        }
+      },
+
+      syncFromFirestore: async () => {
+        try {
+          const remoteParts = await getParts();
+          const remoteCustomers = await getCustomers();
+          const remoteSales = await getSalesHistory();
+
+          set({
+            parts: remoteParts.length > 0 ? remoteParts : get().parts,
+            customers: remoteCustomers.length > 0 ? remoteCustomers : get().customers,
+            salesHistory: remoteSales.length > 0 ? remoteSales : get().salesHistory,
+          });
+          get().triggerToast("✓ Synced with Firebase Cloud");
+        } catch (error) {
+          console.error("Failed to sync from Firestore:", error);
+          get().triggerToast("⚠ Running in local offline mode", false);
         }
       },
     }),

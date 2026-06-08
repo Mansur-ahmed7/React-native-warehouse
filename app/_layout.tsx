@@ -5,6 +5,7 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useWarehouseStore } from "@/store/useWarehouseStore";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -46,6 +47,13 @@ export default function RootLayout() {
       router.replace("/");
     }
   }, [isLoggedIn, segments, loaded, hydrated]);
+
+  // Trigger Firestore sync when authenticated
+  useEffect(() => {
+    if (isLoggedIn && hydrated) {
+      useWarehouseStore.getState().syncFromFirestore();
+    }
+  }, [isLoggedIn, hydrated]);
 
   useEffect(() => {
     if ((loaded || error) && hydrated) {
