@@ -4,12 +4,12 @@ import { Pressable, ScrollView, Text, TextInput, View, Alert, StyleSheet } from 
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { useWarehouseStore } from "../store/useWarehouseStore";
+import { useAuthStore } from "../store/useAuthStore";
 
 export default function SettingsTab() {
   const {
     settings,
     setLanguage,
-    setTheme,
     setExchangeRate,
     setActiveTab,
     exportBackup,
@@ -19,15 +19,13 @@ export default function SettingsTab() {
     addCarBrand,
     removeCarBrand,
   } = useWarehouseStore();
+  const logout = useAuthStore((s) => s.logout);
   const [rateText, setRateText] = useState(String(settings.exchangeRate));
   const [newBrandInput, setNewBrandInput] = useState("");
   const isKu = settings.language === "ku";
 
   const t = {
     language: isKu ? "زمان" : "LANGUAGE",
-    theme: isKu ? "ڕوکار" : "THEME",
-    themeLight: isKu ? "ڕوکاری ڕووناک" : "Light Mode",
-    themeDark: isKu ? "ڕوکاری تاریک" : "Dark Mode",
     exchangeRate: isKu ? "نرخی گۆڕینەوە" : "EXCHANGE RATE",
     carBrands: isKu ? "مارکەکانی ئۆتۆمبێل" : "CAR BRANDS",
     newBrandPlaceholder: isKu ? "ناوی نوێی مارکە..." : "New brand name...",
@@ -36,6 +34,8 @@ export default function SettingsTab() {
     staffMember: isKu ? "کارمەندی بەش" : "Staff Member",
     warehouseStaff: isKu ? "کارمەندی کۆگا" : "Warehouse Staff",
     logout: isKu ? "چوونەدەرەوە" : "Log Out",
+    logoutConfirmTitle: isKu ? "چوونەدەرەوە" : "Log Out",
+    logoutConfirmMsg: isKu ? "ئایا دڵنیای لە چوونەدەرەوە لە هەژمارەکەت؟" : "Are you sure you want to log out of your account?",
     backup: isKu ? "پاڵپشتی کۆگا" : "BACKUP",
     exportBackup: isKu ? "هەناردەکردنی پاڵپشتی" : "Export Backup",
     exportBackupSub: isKu ? "پاشەکەوتکردنی فایلێکی JSON بۆ درایڤ/تیلێگرام/هتد." : "Save a JSON backup to Drive/Telegram/etc.",
@@ -141,26 +141,6 @@ export default function SettingsTab() {
           />
         </View>
 
-        <View className="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden mb-5">
-          <SectionHeader
-            icon="theme-light-dark"
-            title={t.theme}
-            color="#0066FF"
-            isKu={isKu}
-          />
-          <RadioRow
-            label={t.themeLight}
-            selected={settings.theme === "light"}
-            onPress={() => setTheme("light")}
-            isKu={isKu}
-          />
-          <RadioRow
-            label={t.themeDark}
-            selected={settings.theme === "dark"}
-            onPress={() => setTheme("dark")}
-            isKu={isKu}
-          />
-        </View>
 
         <View className="bg-white rounded-[24px] border border-gray-100 shadow-sm p-5 mb-5">
           <View style={{ flexDirection: isKu ? "row-reverse" : "row", alignItems: "center", marginBottom: 16 }}>
@@ -250,7 +230,25 @@ export default function SettingsTab() {
             value={t.warehouseStaff}
             isKu={isKu}
           />
-          <InfoRow icon="logout" label={t.logout} value="" danger isKu={isKu} />
+          <Pressable
+            onPress={() => {
+              Alert.alert(
+                t.logoutConfirmTitle,
+                t.logoutConfirmMsg,
+                [
+                  { text: t.cancel, style: "cancel" },
+                  {
+                    text: t.logout,
+                    style: "destructive",
+                    onPress: () => logout(),
+                  },
+                ]
+              );
+            }}
+            className="active:opacity-75"
+          >
+            <InfoRow icon="logout" label={t.logout} value="" danger isKu={isKu} />
+          </Pressable>
         </View>
 
         <View className="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden mb-6">

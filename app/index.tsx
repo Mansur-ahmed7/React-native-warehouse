@@ -11,6 +11,7 @@ import SaleTab from "../components/SaleTab";
 import ScannerTab from "../components/ScannerTab";
 import SettingsTab from "../components/SettingsTab";
 import { useWarehouseStore } from "../store/useWarehouseStore";
+import { useAuthStore } from "../store/useAuthStore";
 import { TabName } from "../types/inventory";
 
 const navItems: { key: TabName; label: string; icon: keyof typeof MaterialCommunityIcons.glyphMap }[] = [
@@ -99,8 +100,13 @@ function BottomNav({
 }
 
 export default function Index() {
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const { activeTab, showReceipt, cartItemCount, setActiveTab, toast, settings } = useWarehouseStore();
   const insets = useSafeAreaInsets();
+
+  if (!isLoggedIn) {
+    return null;
+  }
 
   const paddingTop = Math.max(insets.top, 16);
   const bottomNavHeight = 66 + Math.max(insets.bottom, 12);

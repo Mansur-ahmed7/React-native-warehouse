@@ -234,13 +234,13 @@ export function OnboardingScreen() {
         </View>
       </View>
 
-      <Link href="/(auth)/signup" asChild>
+      <Link href="/(auth)/signin" asChild>
         <Pressable
           className="flex-row items-center justify-center rounded-[20px] bg-[#4A3DFF] px-6 active:bg-primary-blue"
           style={{ height: buttonHeight }}
         >
           <Text className="font-poppins-semibold text-[24px] leading-[30px] text-white">
-            Get Started
+            Log In
           </Text>
           <View className="absolute right-7">
             <MaterialCommunityIcons

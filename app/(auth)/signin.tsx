@@ -14,22 +14,45 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 
 import { images } from "@/constants/images";
-import { VerificationModal } from "@/components/verification-modal";
 import { useAuthStore } from "@/store/useAuthStore";
+
+const PREDEFINED_USERS = [
+  { username: "admin", password: "admin123", name: "Admin Manager" },
+  { username: "staff1", password: "staff123", name: "Staff Member 1" },
+  { username: "staff2", password: "staff223", name: "Staff Member 2" },
+  { username: "staff3", password: "staff323", name: "Staff Member 3" },
+  { username: "staff4", password: "staff423", name: "Staff Member 4" },
+  { username: "staff5", password: "staff523", name: "Staff Member 5" },
+  { username: "staff6", password: "staff623", name: "Staff Member 6" },
+  { username: "staff7", password: "staff723", name: "Staff Member 7" },
+  { username: "staff8", password: "staff823", name: "Staff Member 8" },
+  { username: "staff9", password: "staff923", name: "Staff Member 9" },
+  { username: "staff10", password: "staff1023", name: "Staff Member 10" },
+];
 
 export default function SignInScreen() {
   const insets = useSafeAreaInsets();
   
   const login = useAuthStore((s) => s.login);
-  const [email, setEmail] = useState("");
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  // Simple email validation regex
-  const isEmailValid = /\S+@\S+\.\S+/.test(email);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSignIn = () => {
-    if (!email) return;
-    setIsModalVisible(true);
+    setErrorMessage("");
+    if (!username || !password) return;
+
+    const matchedUser = PREDEFINED_USERS.find(
+      (u) => u.username.toLowerCase() === username.toLowerCase().trim() && u.password === password
+    );
+
+    if (matchedUser) {
+      login(matchedUser.username);
+      router.replace("/");
+    } else {
+      setErrorMessage("Invalid username or password");
+    }
   };
 
   return (
@@ -119,49 +142,88 @@ export default function SignInScreen() {
             />
           </View>
 
-          {/* Form Card (Email input ONLY, NO PASSWORD field) */}
+          {/* Form Card */}
           <View className="w-full gap-4 mb-6">
-            {/* Email Field */}
+            {/* Username Field */}
             <View className="w-full flex-row items-center bg-white rounded-2xl px-4 py-3 border border-gray-100 shadow-sm">
               <View className="w-10 h-10 rounded-xl bg-blue-50 items-center justify-center mr-3">
                 <MaterialCommunityIcons
                   color="#2563EB"
-                  name="email-outline"
+                  name="account-outline"
                   size={20}
                 />
               </View>
               <View className="flex-1">
                 <Text className="font-poppins-medium text-[11px] text-text-secondary leading-[13px]">
-                  Email
+                  Username
                 </Text>
                 <TextInput
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="alex@gmail.com"
+                  value={username}
+                  onChangeText={(text) => {
+                    setUsername(text);
+                    setErrorMessage("");
+                  }}
+                  placeholder="admin or staff1"
                   placeholderTextColor="#9CA3AF"
-                  keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
                   className="font-poppins-semibold text-[15px] text-text-primary p-0 m-0 mt-0.5"
                 />
               </View>
-              {isEmailValid && (
+            </View>
+
+            {/* Password Field */}
+            <View className="w-full flex-row items-center bg-white rounded-2xl px-4 py-3 border border-gray-100 shadow-sm">
+              <View className="w-10 h-10 rounded-xl bg-blue-50 items-center justify-center mr-3">
                 <MaterialCommunityIcons
-                  color="#10B981"
-                  name="check-circle"
-                  size={22}
+                  color="#2563EB"
+                  name="lock-outline"
+                  size={20}
                 />
-              )}
+              </View>
+              <View className="flex-1">
+                <Text className="font-poppins-medium text-[11px] text-text-secondary leading-[13px]">
+                  Password
+                </Text>
+                <TextInput
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    setErrorMessage("");
+                  }}
+                  placeholder="•••••••••"
+                  placeholderTextColor="#9CA3AF"
+                  secureTextEntry={!showPassword}
+                  className="font-poppins-semibold text-[15px] text-text-primary p-0 m-0 mt-0.5"
+                />
+              </View>
+              <Pressable
+                onPress={() => setShowPassword(!showPassword)}
+                className="w-8 h-8 items-center justify-center active:opacity-60"
+              >
+                <MaterialCommunityIcons
+                  color="#6B7280"
+                  name={showPassword ? "eye" : "eye-off-outline"}
+                  size={20}
+                />
+              </Pressable>
             </View>
           </View>
+
+          {/* Error Message */}
+          {errorMessage ? (
+            <Text className="font-poppins-semibold text-[13px] text-red-500 text-center mb-4">
+              {errorMessage}
+            </Text>
+          ) : null}
 
           {/* Action Button */}
           <Pressable
             onPress={handleSignIn}
             className={`w-full flex-row items-center justify-center rounded-[20px] bg-[#4A3DFF] py-4.5 mb-6 active:bg-blue-700 shadow-sm ${
-              !email ? "opacity-60" : ""
+              !username || !password ? "opacity-60" : ""
             }`}
-            disabled={!email}
+            disabled={!username || !password}
           >
             <Text className="font-poppins-semibold text-[18px] text-white">
               Sign In
@@ -170,66 +232,8 @@ export default function SignInScreen() {
               <MaterialCommunityIcons color="#FFFFFF" name="arrow-right" size={20} />
             </View>
           </Pressable>
-
-          {/* Divider */}
-          <View className="flex-row items-center justify-center mb-6">
-            <View className="flex-grow h-[1px] bg-gray-200" />
-            <Text className="font-poppins-medium text-[12px] text-text-secondary px-3 uppercase tracking-wider">
-              or continue with
-            </Text>
-            <View className="flex-grow h-[1px] bg-gray-200" />
-          </View>
-
-          {/* Social Auth List */}
-          <View className="gap-3.5 mb-8">
-            <Pressable className="w-full flex-row items-center justify-center bg-white rounded-2xl py-3.5 border border-gray-100 shadow-sm active:bg-gray-50">
-              <MaterialCommunityIcons color="#EA4335" name="google" size={20} />
-              <Text className="font-poppins-semibold text-[15px] text-text-primary ml-3">
-                Continue with Google
-              </Text>
-            </Pressable>
-
-            <Pressable className="w-full flex-row items-center justify-center bg-white rounded-2xl py-3.5 border border-gray-100 shadow-sm active:bg-gray-50">
-              <MaterialCommunityIcons color="#1877F2" name="facebook" size={20} />
-              <Text className="font-poppins-semibold text-[15px] text-text-primary ml-3">
-                Continue with Facebook
-              </Text>
-            </Pressable>
-
-            <Pressable className="w-full flex-row items-center justify-center bg-white rounded-2xl py-3.5 border border-gray-100 shadow-sm active:bg-gray-50">
-              <MaterialCommunityIcons color="#000000" name="apple" size={20} />
-              <Text className="font-poppins-semibold text-[15px] text-text-primary ml-3">
-                Continue with Apple
-              </Text>
-            </Pressable>
-          </View>
-
-          {/* Bottom Navigation Link */}
-          <View className="flex-row justify-center items-center">
-            <Text className="font-poppins-medium text-[14px] text-text-secondary">
-              {"Don't have an account? "}
-            </Text>
-            <Pressable
-              onPress={() => router.push("/(auth)/signup")}
-              className="active:opacity-60"
-            >
-              <Text className="font-poppins-bold text-[14px] text-[#4A3DFF]">
-                Sign up
-              </Text>
-            </Pressable>
-          </View>
         </View>
       </ScrollView>
-
-      {/* Verification modal */}
-      <VerificationModal
-        visible={isModalVisible}
-        onClose={() => setIsModalVisible(false)}
-        email={email}
-        onSuccess={() => {
-          login(email);
-        }}
-      />
     </KeyboardAvoidingView>
   );
 }
