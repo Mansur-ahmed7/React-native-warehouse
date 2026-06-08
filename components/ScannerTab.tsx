@@ -11,17 +11,19 @@ import {
   Alert,
   Modal,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 import { CameraView, useCameraPermissions, BarcodeScanningResult } from "expo-camera";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useWarehouseStore } from "../store/useWarehouseStore";
 import { Part, Condition, CompatibleCar } from "../types/inventory";
-import { BRANDS } from "../data/brands";
+import { useCarBrands } from "../data/brands";
 import { images } from "../constants/images";
 
 export default function ScannerTab() {
   const [permission, requestPermission] = useCameraPermissions();
+  const carBrands = useCarBrands();
 
   // Store Slices & Actions
   const {
@@ -33,7 +35,54 @@ export default function ScannerTab() {
     triggerToast,
     updatePart,
     deletePart,
+    settings,
   } = useWarehouseStore();
+
+  const isKu = settings.language === "ku";
+
+  // Kurdish Localized Strings
+  const t = {
+    title: isKu ? "سکانەر" : "Scanner",
+    cameraPermissionMsg: isKu ? "پێویستە مۆڵەتی کامێرا بدەیت بۆ سکانکردنی بارکۆد." : "Camera access is needed for barcode scanning.",
+    allowCamera: isKu ? "ڕێگەدان بە کامێرا" : "Allow Camera",
+    pointCamera: isKu ? "کامێراکە ڕووبەڕووی بارکۆدەکە بکەرەوە" : "Point camera at barcode",
+    or: isKu ? "یان" : "OR",
+    searchPlaceholder: isKu ? "بگەڕێ بەپێی ناو یان ژمارەی پارچە..." : "Search by name or part number...",
+    partNotFound: isKu ? "✗ پارچەکە نەدۆزرایەوە" : "✗ Part not found",
+    addNewItem: isKu ? "+ زیادکردنی کاڵای نوێ" : "+ Add New Item",
+    recentScans: isKu ? "سکانەکانی ئەم دواییە" : "Recent Scans",
+    outOfStock: isKu ? "کاڵا نەماوە" : "Out of Stock",
+    lowStock: (qty: number) => isKu ? `کەمبووەتەوە: ×${qty}` : `Low Stock: ×${qty}`,
+    inStock: (qty: number) => isKu ? `✓ لە کۆگادایە × ${qty}` : `✓ In Stock × ${qty}`,
+    viewItem: isKu ? "بینینی کاڵا" : "View Item",
+    addToSale: isKu ? "+ زیادکردن بۆ فرۆشتن" : "+ Add to Sale",
+    editPartDetail: isKu ? "دەستکاریکردنی زانیارییەکانی پارچە" : "Edit Part Detail",
+    partName: isKu ? "ناوی پارچە" : "Part Name",
+    partNumber: isKu ? "ژمارەی پارچە" : "Part Number",
+    condition: isKu ? "بارودۆخ" : "Condition",
+    quantity: isKu ? "بڕ" : "Quantity",
+    alertThreshold: isKu ? "ئاستی هۆشداری" : "Alert Threshold",
+    buyPriceUSD: isKu ? "نرخی کڕین (USD)" : "Buy Price (USD)",
+    sellPriceIQD: isKu ? "نرخی فرۆشتن (IQD)" : "Sell Price (IQD)",
+    compatibleCars: isKu ? "ئۆتۆمبێلە گونجاوەکان" : "Compatible Cars",
+    addCompatibleVehicle: isKu ? "زیادکردنی ئۆتۆمبێلی گونجاو" : "Add Compatible Vehicle",
+    carModelPlaceholder: isKu ? "ناوی مۆدێل (بۆ نموونە Camry)" : "Model name (e.g. Camry)",
+    yearFromPlaceholder: isKu ? "لە ساڵی: ٢٠١٥" : "Year From: 2015",
+    yearToPlaceholder: isKu ? "تا ساڵی: ٢٠٢٢" : "Year To: 2022",
+    cancel: isKu ? "پاشگەزبوونەوە" : "Cancel",
+    addVehicle: isKu ? "زیادکردنی ئۆتۆمبێل" : "Add Vehicle",
+    deletePart: isKu ? "ڕەشکردنەوەی پارچە" : "Delete Part",
+    saveChanges: isKu ? "پاشەکەوتکردنی گۆڕانکارییەکان" : "Save Changes",
+    deletePartConfirmTitle: isKu ? "ڕەشکردنەوەی پارچە" : "Delete Part",
+    deletePartConfirmMsg: (name: string) => isKu ? `ئایا دڵنیای لە ڕەشکردنەوەی ${name}؟` : `Are you sure you want to delete ${name}?`,
+    delete: isKu ? "ڕەشکردنەوە" : "Delete",
+    fillRequired: isKu ? "تکایە زانیارییە پێویستەکان پڕ بکەرەوە." : "Please fill in all required fields.",
+    fillVehicleError: isKu ? "تکایە مۆدێلی ئۆتۆمبێل و ساڵی کۆتایی بنووسە." : "Please fill in vehicle model and end year.",
+    errorTitle: isKu ? "هەڵە" : "Error",
+    partDeleted: (name: string) => isKu ? `✗ ${name} ڕەشکرایەوە` : `✗ ${name} deleted`,
+    partUpdated: isKu ? "✓ زانیارییەکانی پارچە بە سەرکەوتوویی نوێکرانەوە" : "✓ Part details updated successfully",
+    partAddedSale: (name: string) => isKu ? `✓ ${name} بۆ فرۆشتن زیادکرا` : `✓ ${name} added to sale`,
+  };
 
   // Local Search & Popup States
   const [searchQueryScanner, setSearchQueryScanner] = useState("");
@@ -67,7 +116,7 @@ export default function ScannerTab() {
     Animated.loop(
       Animated.sequence([
         Animated.timing(sweepAnim, {
-          toValue: 200,
+          toValue: 193,
           duration: 2000,
           useNativeDriver: true,
         }),
@@ -134,7 +183,7 @@ export default function ScannerTab() {
       setShowScanPopup(true);
     } else {
       setSearchQueryScanner(scannedValue);
-      triggerToast("✗ Part not found", true);
+      triggerToast(t.partNotFound, true);
     }
 
     setTimeout(() => setIsHandlingScan(false), 1500);
@@ -145,7 +194,7 @@ export default function ScannerTab() {
     addToCart(part.id);
     addRecentScan(part.id);
     setShowScanPopup(false);
-    triggerToast(`✓ ${part.name} added to sale`);
+    triggerToast(t.partAddedSale(part.name));
   };
 
   // Open Edit Details Modal
@@ -185,7 +234,7 @@ export default function ScannerTab() {
     });
 
     setIsEditModalVisible(false);
-    triggerToast("✓ Part details updated successfully");
+    triggerToast(t.partUpdated);
   };
 
   // Delete part inside edit modal
@@ -193,17 +242,17 @@ export default function ScannerTab() {
     if (!scannedPart) return;
 
     Alert.alert(
-      "Delete Part",
-      `Are you sure you want to delete ${scannedPart.name}?`,
+      t.deletePartConfirmTitle,
+      t.deletePartConfirmMsg(scannedPart.name),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t.cancel, style: "cancel" },
         {
-          text: "Delete",
+          text: t.delete,
           style: "destructive",
           onPress: () => {
             deletePart(scannedPart.id);
             setIsEditModalVisible(false);
-            triggerToast(`✗ ${scannedPart.name} deleted`);
+            triggerToast(t.partDeleted(scannedPart.name));
           },
         },
       ]
@@ -213,7 +262,7 @@ export default function ScannerTab() {
   // Add Compatible Car Chip
   const addCompatibleCar = () => {
     if (!carModel || !carYearTo) {
-      Alert.alert("Error", "Please fill in vehicle model and end year.");
+      Alert.alert(t.errorTitle, t.fillVehicleError);
       return;
     }
     const fromYear = parseInt(carYearFrom) || 2015;
@@ -236,10 +285,10 @@ export default function ScannerTab() {
   return (
     <View className="flex-grow flex-shrink">
       {/* Header bar */}
-      <View className="flex-row items-center justify-between px-6 mb-4">
+      <View className="flex-row items-center justify-between px-6 mb-4" style={isKu ? styles.rtlRow : undefined}>
         <View className="w-10" />
         <Text className="font-poppins-bold text-[24px] text-text-primary text-center">
-          Scanner / باركۆد
+          {t.title}
         </Text>
         <View className="w-10" />
       </View>
@@ -248,106 +297,110 @@ export default function ScannerTab() {
         {/* Camera viewfinder sweeping laser lines */}
         {searchQueryScanner === "" && (
           <View className="items-center px-6 mb-5">
-            <View
-              className="w-full max-w-[325px] aspect-square rounded-[36px] bg-black overflow-hidden items-center justify-center relative shadow-lg active:opacity-95"
-            >
+            <View style={styles.cameraWrapper}>
               {permission?.granted ? (
-                <CameraView
-                  style={StyleSheet.absoluteFill}
-                  facing="back"
-                  active={!showScanPopup && !isEditModalVisible}
-                  barcodeScannerSettings={{
-                    barcodeTypes: [
-                      "qr",
-                      "code128",
-                      "code39",
-                      "code93",
-                      "ean13",
-                      "ean8",
-                      "upc_a",
-                      "upc_e",
-                      "codabar",
-                      "itf14",
-                    ],
-                  }}
-                  onBarcodeScanned={
-                    showScanPopup || isEditModalVisible || isHandlingScan
-                      ? undefined
-                      : handleBarcodeScanned
-                  }
-                  onMountError={(event) => {
-                    triggerToast(`✗ ${event.message}`, true);
-                  }}
-                />
+                <View style={styles.cameraContainer}>
+                  <CameraView
+                    style={styles.camera}
+                    facing="back"
+                    active={!showScanPopup && !isEditModalVisible}
+                    barcodeScannerSettings={{
+                      barcodeTypes: [
+                        "qr",
+                        "code128",
+                        "code39",
+                        "code93",
+                        "ean13",
+                        "ean8",
+                        "upc_a",
+                        "upc_e",
+                        "codabar",
+                        "itf14",
+                      ],
+                    }}
+                    onBarcodeScanned={
+                      showScanPopup || isEditModalVisible || isHandlingScan
+                        ? undefined
+                        : handleBarcodeScanned
+                    }
+                    onMountError={(event) => {
+                      triggerToast(`✗ ${event.message}`, true);
+                    }}
+                  />
+                </View>
               ) : (
                 <View className="absolute inset-0 bg-zinc-900 opacity-90 items-center justify-center px-7">
                   <MaterialCommunityIcons color="#52525b" name="camera-off" size={80} />
                   <Text className="font-poppins-bold text-[15px] text-white text-center mt-4">
-                    Camera access is needed for barcode scanning.
+                    {t.cameraPermissionMsg}
                   </Text>
                   <Pressable
                     onPress={requestPermission}
                     className="mt-4 px-5 py-2.5 rounded-full bg-[#0066FF] active:bg-blue-700"
                   >
                     <Text className="font-poppins-bold text-[13px] text-white">
-                      Allow Camera
+                      {t.allowCamera}
                     </Text>
                   </Pressable>
                 </View>
               )}
 
-              {/* Glowing vertical sweeping laser */}
-              <View pointerEvents="none" className="w-[200px] h-[200px] items-center justify-center relative bg-black/10 rounded-3xl border border-white/20">
-                <Animated.View
-                  style={{
-                    transform: [{ translateY: sweepAnim }],
-                    position: "absolute",
-                    left: 10,
-                    right: 10,
-                    height: 3,
-                    backgroundColor: "#0066FF",
-                    shadowColor: "#0066FF",
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowOpacity: 0.8,
-                    shadowRadius: 6,
-                    elevation: 4,
-                  }}
-                />
+              {/* Glowing vertical sweeping laser overlay container */}
+              <View style={styles.overlayContainer} pointerEvents="none">
+                <View className="w-[200px] h-[200px] items-center justify-center relative bg-black/10 rounded-3xl border border-white/20">
+                  <Animated.View
+                    style={{
+                      transform: [{ translateY: sweepAnim }],
+                      position: "absolute",
+                      top: 2,
+                      left: 10,
+                      right: 10,
+                      height: 3,
+                      backgroundColor: "#0066FF",
+                      shadowColor: "#0066FF",
+                      shadowOffset: { width: 0, height: 0 },
+                      shadowOpacity: 0.8,
+                      shadowRadius: 6,
+                      elevation: 4,
+                      zIndex: 10,
+                    }}
+                  />
 
-                {/* corner blue brackets */}
-                <View className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-[#0066FF] rounded-tl-lg" />
-                <View className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-[#0066FF] rounded-tr-lg" />
-                <View className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-[#0066FF] rounded-bl-lg" />
-                <View className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-[#0066FF] rounded-br-lg" />
+                  {/* corner blue brackets */}
+                  <View className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-[#0066FF] rounded-tl-lg" />
+                  <View className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-[#0066FF] rounded-tr-lg" />
+                  <View className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-[#0066FF] rounded-bl-lg" />
+                  <View className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-[#0066FF] rounded-br-lg" />
 
-                <MaterialCommunityIcons color="rgba(255,255,255,0.15)" name="barcode" size={120} />
+                  <MaterialCommunityIcons color="rgba(255,255,255,0.15)" name="barcode" size={120} />
+                </View>
               </View>
             </View>
-            <Text className="font-poppins-semibold text-[13px] text-text-secondary mt-3.5 text-center">
-              Point camera at barcode
+            <Text className="font-poppins-semibold text-[13px] text-text-secondary mt-3.5 text-center" style={isKu ? styles.rtlText : undefined}>
+              {t.pointCamera}
             </Text>
           </View>
         )}
 
         {/* OR divider */}
         {searchQueryScanner === "" && (
-          <View className="flex-row items-center px-6 mb-5">
+          <View className="flex-row items-center px-6 mb-5" style={isKu ? styles.rtlRow : undefined}>
             <View className="flex-1 h-[1px] bg-gray-200" />
-            <Text className="font-poppins-bold text-[12px] text-gray-400 mx-4">OR</Text>
+            <Text className="font-poppins-bold text-[12px] text-gray-400 mx-4">{t.or}</Text>
             <View className="flex-1 h-[1px] bg-gray-200" />
           </View>
         )}
 
         {/* Search bar */}
         <View className="px-6 mb-5">
-          <View className="w-full flex-row items-center bg-white rounded-2xl px-4 py-3.5 border border-gray-200 shadow-sm">
-            <MaterialCommunityIcons color="#9CA3AF" name="magnify" size={22} className="mr-3" />
+          <View className="w-full flex-row items-center bg-white rounded-2xl px-4 py-3.5 border border-gray-200 shadow-sm" style={isKu ? styles.rtlRow : undefined}>
+            <MaterialCommunityIcons color="#9CA3AF" name="magnify" size={22} style={isKu ? { marginLeft: 12 } : { marginRight: 12 }} />
             <TextInput
               value={searchQueryScanner}
               onChangeText={setSearchQueryScanner}
-              placeholder="Search by name or part number..."
+              placeholder={t.searchPlaceholder}
               placeholderTextColor="#9CA3AF"
-              className="flex-1 font-poppins-medium text-[15px] text-text-primary p-0 m-0"
+              style={[{ flex: 1, fontFamily: "Poppins-Medium", fontSize: 15, color: "#0F172A", padding: 0, margin: 0, textAlign: isKu ? "right" : "left" }]}
             />
             {searchQueryScanner !== "" && (
               <Pressable onPress={() => setSearchQueryScanner("")}>
@@ -364,14 +417,14 @@ export default function ScannerTab() {
               <View className="items-center justify-center py-8 bg-white rounded-3xl border border-red-100 p-6 shadow-sm">
                 <MaterialCommunityIcons color="#EF4444" name="alert-circle-outline" size={42} />
                 <Text className="font-poppins-bold text-[16px] text-red-600 mt-2.5 text-center">
-                  ✗ Part not found
+                  {t.partNotFound}
                 </Text>
                 <Pressable
                   onPress={() => setActiveTab("inventory")}
                   className="mt-3 bg-red-50 border border-red-200 px-5 py-2 rounded-full active:bg-red-100"
                 >
                   <Text className="font-poppins-bold text-[13px] text-red-600">
-                    + Add New Item
+                    {t.addNewItem}
                   </Text>
                 </Pressable>
               </View>
@@ -386,9 +439,13 @@ export default function ScannerTab() {
                       setShowScanPopup(true);
                     }}
                     className="flex-row bg-white rounded-2xl p-3 border border-gray-100 shadow-sm items-center justify-between active:bg-gray-50"
+                    style={isKu ? styles.rtlRow : undefined}
                   >
-                    <View className="flex-row items-center flex-1">
-                      <View className="w-12 h-12 rounded-xl bg-gray-50 mr-3 items-center justify-center overflow-hidden border border-gray-100">
+                    <View className="flex-row items-center flex-1" style={isKu ? styles.rtlRow : undefined}>
+                      <View
+                        className="w-12 h-12 rounded-xl bg-gray-50 items-center justify-center overflow-hidden border border-gray-100"
+                        style={isKu ? { marginLeft: 12 } : { marginRight: 12 }}
+                      >
                         {partImg ? (
                           <Image source={partImg} style={{ width: "100%", height: "100%" }} />
                         ) : (
@@ -397,16 +454,16 @@ export default function ScannerTab() {
                           </Text>
                         )}
                       </View>
-                      <View className="flex-1 pr-2">
-                        <Text className="font-poppins-bold text-[14px] text-text-primary" numberOfLines={1}>
+                      <View className="flex-1 pr-2" style={isKu ? styles.rtlAlign : undefined}>
+                        <Text className="font-poppins-bold text-[14px] text-text-primary" numberOfLines={1} style={isKu ? styles.rtlText : undefined}>
                           {part.name}
                         </Text>
-                        <Text className="font-poppins-semibold text-[11.5px] text-gray-400 mt-0.5">
+                        <Text className="font-poppins-semibold text-[11.5px] text-gray-400 mt-0.5" style={isKu ? styles.rtlText : undefined}>
                           {part.partNumber}
                         </Text>
                       </View>
                     </View>
-                    <MaterialCommunityIcons color="#0066FF" name="chevron-right" size={20} />
+                    <MaterialCommunityIcons color="#0066FF" name={isKu ? "chevron-left" : "chevron-right"} size={20} />
                   </Pressable>
                 );
               })
@@ -415,8 +472,8 @@ export default function ScannerTab() {
         ) : (
           /* History Scanned List */
           <View className="px-6 mb-6">
-            <Text className="font-poppins-bold text-[17px] text-text-primary mb-3">
-              Recent Scans
+            <Text className="font-poppins-bold text-[17px] text-text-primary mb-3" style={isKu ? styles.rtlText : undefined}>
+              {t.recentScans}
             </Text>
 
             <View className="gap-3">
@@ -433,9 +490,13 @@ export default function ScannerTab() {
                       setShowScanPopup(true);
                     }}
                     className="flex-row bg-white rounded-2xl p-3 border border-gray-100 shadow-sm items-center justify-between active:bg-gray-50"
+                    style={isKu ? styles.rtlRow : undefined}
                   >
-                    <View className="flex-row items-center flex-1">
-                      <View className="w-12 h-12 rounded-xl bg-gray-50 mr-3 items-center justify-center overflow-hidden border border-gray-100">
+                    <View className="flex-row items-center flex-1" style={isKu ? styles.rtlRow : undefined}>
+                      <View
+                        className="w-12 h-12 rounded-xl bg-gray-50 items-center justify-center overflow-hidden border border-gray-100"
+                        style={isKu ? { marginLeft: 12 } : { marginRight: 12 }}
+                      >
                         {partImg ? (
                           <Image source={partImg} style={{ width: "100%", height: "100%" }} />
                         ) : (
@@ -444,16 +505,16 @@ export default function ScannerTab() {
                           </Text>
                         )}
                       </View>
-                      <View className="flex-1 pr-2">
-                        <Text className="font-poppins-bold text-[14px] text-text-primary" numberOfLines={1}>
+                      <View className="flex-1 pr-2" style={isKu ? styles.rtlAlign : undefined}>
+                        <Text className="font-poppins-bold text-[14px] text-text-primary" numberOfLines={1} style={isKu ? styles.rtlText : undefined}>
                           {part.name}
                         </Text>
-                        <Text className="font-poppins-semibold text-[11.5px] text-gray-400 mt-0.5">
+                        <Text className="font-poppins-semibold text-[11.5px] text-gray-400 mt-0.5" style={isKu ? styles.rtlText : undefined}>
                           {part.partNumber}
                         </Text>
                       </View>
                     </View>
-                    <MaterialCommunityIcons color="#0066FF" name="chevron-right" size={20} />
+                    <MaterialCommunityIcons color="#0066FF" name={isKu ? "chevron-left" : "chevron-right"} size={20} />
                   </Pressable>
                 );
               })}
@@ -483,9 +544,12 @@ export default function ScannerTab() {
           <View className="bg-white rounded-t-[30px] p-6 pb-10 shadow-2xl gap-5">
             <View className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-1" />
 
-            <View className="flex-row">
+            <View className="flex-row" style={isKu ? styles.rtlRow : undefined}>
               {/* Photo Thumbnail */}
-              <View className="w-[85px] h-[85px] bg-gray-50 rounded-xl overflow-hidden mr-4 items-center justify-center border border-gray-100">
+              <View
+                className="w-[85px] h-[85px] bg-gray-50 rounded-xl overflow-hidden items-center justify-center border border-gray-100"
+                style={isKu ? { marginLeft: 16 } : { marginRight: 16 }}
+              >
                 {getPartImage(scannedPart) ? (
                   <Image
                     source={getPartImage(scannedPart)}
@@ -502,16 +566,16 @@ export default function ScannerTab() {
               </View>
 
               {/* Part specifications */}
-              <View className="flex-1 justify-between py-1">
-                <View>
-                  <Text className="font-poppins-bold text-[18px] text-text-primary leading-[22px]" numberOfLines={1}>
+              <View className="flex-1 justify-between py-1" style={isKu ? styles.rtlAlign : undefined}>
+                <View style={isKu ? styles.rtlAlign : undefined}>
+                  <Text className="font-poppins-bold text-[18px] text-text-primary leading-[22px]" numberOfLines={1} style={isKu ? styles.rtlText : undefined}>
                     {scannedPart.name}
                   </Text>
-                  <Text className="font-poppins-semibold text-[13px] text-gray-400 mt-0.5">
+                  <Text className="font-poppins-semibold text-[13px] text-gray-400 mt-0.5" style={isKu ? styles.rtlText : undefined}>
                     {scannedPart.partNumber}
                   </Text>
                 </View>
-                <View className="flex-row items-center justify-between mt-2">
+                <View className="flex-row items-center justify-between mt-2 w-full" style={isKu ? styles.rtlRow : undefined}>
                   <Text className="font-poppins-bold text-[17px] text-text-primary">
                     {scannedPart.sellPriceIQD.toLocaleString()} IQD
                   </Text>
@@ -536,10 +600,10 @@ export default function ScannerTab() {
                       }`}
                     >
                       {scannedPart.status === "outOfStock"
-                        ? "Out of Stock"
+                        ? t.outOfStock
                         : scannedPart.status === "lowStock"
-                        ? `Low Stock: ×${scannedPart.quantity}`
-                        : `✓ In Stock × ${scannedPart.quantity}`}
+                        ? t.lowStock(scannedPart.quantity)
+                        : t.inStock(scannedPart.quantity)}
                     </Text>
                   </View>
                 </View>
@@ -547,20 +611,20 @@ export default function ScannerTab() {
             </View>
 
             {/* CTA action buttons */}
-            <View className="flex-row gap-3.5 mt-2">
+            <View className="flex-row gap-3.5 mt-2" style={isKu ? styles.rtlRow : undefined}>
               <Pressable
                 onPress={() => handleOpenEdit(scannedPart)}
                 className="flex-1 py-4.5 rounded-[18px] bg-white border border-[#0066FF] items-center justify-center active:bg-blue-50/10"
               >
                 <Text className="font-poppins-bold text-[15px] text-[#0066FF]">
-                  View Item
+                  {t.viewItem}
                 </Text>
               </Pressable>
 
               {scannedPart.status === "outOfStock" ? (
                 <View className="flex-1 py-4.5 rounded-[18px] bg-gray-100 items-center justify-center border border-gray-200">
                   <Text className="font-poppins-bold text-[15px] text-red-500">
-                    Out of Stock
+                    {t.outOfStock}
                   </Text>
                 </View>
               ) : (
@@ -569,7 +633,7 @@ export default function ScannerTab() {
                   className="flex-1 py-4.5 rounded-[18px] bg-[#0066FF] items-center justify-center active:bg-blue-700 shadow-md"
                 >
                   <Text className="font-poppins-bold text-[15px] text-white">
-                    + Add to Sale
+                    {t.addToSale}
                   </Text>
                 </Pressable>
               )}
@@ -592,9 +656,9 @@ export default function ScannerTab() {
           <View className="w-full bg-white rounded-t-[36px] px-6 pb-8 pt-6 shadow-2xl">
             <View className="w-12 h-1.5 bg-gray-200 rounded-full align-self-center mx-auto mb-5" />
 
-            <View className="flex-row items-center justify-between mb-5">
-              <Text className="font-poppins-bold text-[24px] text-text-primary">
-                Edit Part Detail
+            <View className="flex-row items-center justify-between mb-5 gap-3" style={isKu ? styles.rtlRow : undefined}>
+              <Text className="font-poppins-bold text-[24px] text-text-primary flex-1" style={isKu ? styles.rtlText : undefined}>
+                {t.editPartDetail}
               </Text>
               <Pressable
                 onPress={() => setIsEditModalVisible(false)}
@@ -606,115 +670,123 @@ export default function ScannerTab() {
 
             <ScrollView showsVerticalScrollIndicator={false} className="max-h-[380px] mb-5">
               <View className="gap-4">
-                <View>
-                  <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                    Part Name
+                <View style={isKu ? styles.rtlAlign : undefined}>
+                  <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5" style={isKu ? styles.rtlText : undefined}>
+                    {t.partName}
                   </Text>
                   <TextInput
                     value={editName}
                     onChangeText={setEditName}
-                    className="w-full bg-[#F6F7FB] border border-gray-100 rounded-xl px-4 py-3 font-poppins-semibold text-[15px] text-text-primary"
+                    style={[{ width: "100%", backgroundColor: "#F6F7FB", borderWidth: 1, borderColor: "#F3F4F6", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontFamily: "Poppins-Semibold", fontSize: 15, color: "#0F172A", textAlign: isKu ? "right" : "left" }]}
                   />
                 </View>
 
-                <View className="flex-row gap-4">
-                  <View className="flex-1">
-                    <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Part Number
+                <View className="flex-row gap-4" style={isKu ? styles.rtlRow : undefined}>
+                  <View className="flex-1" style={isKu ? styles.rtlAlign : undefined}>
+                    <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5" style={isKu ? styles.rtlText : undefined}>
+                      {t.partNumber}
                     </Text>
                     <TextInput
                       value={editPartNumber}
                       onChangeText={setEditPartNumber}
-                      className="w-full bg-[#F6F7FB] border border-gray-100 rounded-xl px-4 py-3 font-poppins-semibold text-[15px] text-text-primary"
+                      style={[{ width: "100%", backgroundColor: "#F6F7FB", borderWidth: 1, borderColor: "#F3F4F6", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontFamily: "Poppins-Semibold", fontSize: 15, color: "#0F172A", textAlign: isKu ? "right" : "left" }]}
                     />
                   </View>
-                  <View className="flex-1">
-                    <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Condition
+                  <View className="flex-1" style={isKu ? styles.rtlAlign : undefined}>
+                    <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5" style={isKu ? styles.rtlText : undefined}>
+                      {t.condition}
                     </Text>
-                    <View className="flex-row border border-gray-200 rounded-xl overflow-hidden h-[48px]">
-                      {(["new", "used", "refurbished"] as Condition[]).map((cond) => (
-                        <Pressable
-                          key={cond}
-                          onPress={() => setEditCondition(cond)}
-                          className={`flex-1 items-center justify-center ${
-                            editCondition === cond ? "bg-[#0066FF]" : "bg-white"
-                          }`}
-                        >
-                          <Text
-                            className={`font-poppins-bold text-[11px] uppercase ${
-                              editCondition === cond ? "text-white" : "text-text-primary"
+                    <View className="flex-row border border-gray-200 rounded-xl overflow-hidden h-[48px]" style={isKu ? styles.rtlRow : undefined}>
+                      {(["new", "used"] as Condition[]).map((cond) => {
+                        let condLabel = cond;
+                        if (isKu) {
+                          if (cond === "new") condLabel = "نوێ" as any;
+                          if (cond === "used") condLabel = "بەکارهاتوو" as any;
+                        }
+                        return (
+                          <Pressable
+                            key={cond}
+                            onPress={() => setEditCondition(cond)}
+                            className={`flex-1 items-center justify-center ${
+                              editCondition === cond ? "bg-[#0066FF]" : "bg-white"
                             }`}
                           >
-                            {cond}
-                          </Text>
-                        </Pressable>
-                      ))}
+                            <Text
+                              className={`font-poppins-bold text-[11px] uppercase ${
+                                editCondition === cond ? "text-white" : "text-text-primary"
+                              }`}
+                            >
+                              {condLabel}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
                     </View>
                   </View>
                 </View>
 
-                <View className="flex-row gap-4">
-                  <View className="flex-1">
-                    <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Quantity
+                <View className="flex-row gap-4" style={isKu ? styles.rtlRow : undefined}>
+                  <View className="flex-1" style={isKu ? styles.rtlAlign : undefined}>
+                    <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5" style={isKu ? styles.rtlText : undefined}>
+                      {t.quantity}
                     </Text>
                     <TextInput
                       value={editQuantity}
                       onChangeText={setEditQuantity}
                       keyboardType="number-pad"
-                      className="w-full bg-[#F6F7FB] border border-gray-100 rounded-xl px-4 py-3 font-poppins-semibold text-[15px] text-text-primary"
+                      style={[{ width: "100%", backgroundColor: "#F6F7FB", borderWidth: 1, borderColor: "#F3F4F6", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontFamily: "Poppins-Semibold", fontSize: 15, color: "#0F172A", textAlign: isKu ? "right" : "left" }]}
                     />
                   </View>
-                  <View className="flex-1">
-                    <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Alert Threshold
+                  <View className="flex-1" style={isKu ? styles.rtlAlign : undefined}>
+                    <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5" style={isKu ? styles.rtlText : undefined}>
+                      {t.alertThreshold}
                     </Text>
                     <TextInput
                       value={editThreshold}
                       onChangeText={setEditThreshold}
                       keyboardType="number-pad"
-                      className="w-full bg-[#F6F7FB] border border-gray-100 rounded-xl px-4 py-3 font-poppins-semibold text-[15px] text-text-primary"
+                      style={[{ width: "100%", backgroundColor: "#F6F7FB", borderWidth: 1, borderColor: "#F3F4F6", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontFamily: "Poppins-Semibold", fontSize: 15, color: "#0F172A", textAlign: isKu ? "right" : "left" }]}
                     />
                   </View>
                 </View>
 
-                <View className="flex-row gap-4">
-                  <View className="flex-1">
-                    <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Buy Price (USD)
+                <View className="flex-row gap-4" style={isKu ? styles.rtlRow : undefined}>
+                  <View className="flex-1" style={isKu ? styles.rtlAlign : undefined}>
+                    <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5" style={isKu ? styles.rtlText : undefined}>
+                      {t.buyPriceUSD}
                     </Text>
                     <TextInput
                       value={editBuyPriceUSD}
                       onChangeText={setEditBuyPriceUSD}
                       keyboardType="numeric"
-                      className="w-full bg-[#F6F7FB] border border-gray-100 rounded-xl px-4 py-3 font-poppins-semibold text-[15px] text-text-primary"
+                      style={[{ width: "100%", backgroundColor: "#F6F7FB", borderWidth: 1, borderColor: "#F3F4F6", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontFamily: "Poppins-Semibold", fontSize: 15, color: "#0F172A", textAlign: isKu ? "right" : "left" }]}
                     />
                   </View>
-                  <View className="flex-1">
-                    <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Sell Price (IQD)
+                  <View className="flex-1" style={isKu ? styles.rtlAlign : undefined}>
+                    <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5" style={isKu ? styles.rtlText : undefined}>
+                      {t.sellPriceIQD}
                     </Text>
                     <TextInput
                       value={editSellPriceIQD}
                       onChangeText={(t) => setEditSellPriceIQD(t.replace(/[^0-9]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","))}
                       keyboardType="number-pad"
-                      className="w-full bg-[#F6F7FB] border border-gray-100 rounded-xl px-4 py-3 font-poppins-semibold text-[15px] text-text-primary"
+                      style={[{ width: "100%", backgroundColor: "#F6F7FB", borderWidth: 1, borderColor: "#F3F4F6", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontFamily: "Poppins-Semibold", fontSize: 15, color: "#0F172A", textAlign: isKu ? "right" : "left" }]}
                     />
                   </View>
                 </View>
 
-                <View>
-                  <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-2">
-                    Compatible Cars
+                <View style={isKu ? styles.rtlAlign : undefined}>
+                  <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-2" style={isKu ? styles.rtlText : undefined}>
+                    {t.compatibleCars}
                   </Text>
-                  <View className="flex-row flex-wrap gap-2 mb-3">
+                  <View className="flex-row flex-wrap gap-2 mb-3" style={isKu ? styles.rtlRow : undefined}>
                     {editCompatibleCars.map((car, idx) => (
                       <View
                         key={idx}
                         className="flex-row items-center bg-blue-50 px-2.5 py-1.5 rounded-full border border-blue-100"
+                        style={isKu ? styles.rtlRow : undefined}
                       >
-                        <Text className="font-poppins-bold text-[11.5px] text-[#0066FF] mr-1.5">
+                        <Text className="font-poppins-bold text-[11.5px] text-[#0066FF]" style={isKu ? { marginLeft: 6 } : { marginRight: 6 }}>
                           {car.brand} {car.model} ({car.yearFrom}-{car.yearTo})
                         </Text>
                         <Pressable
@@ -731,19 +803,21 @@ export default function ScannerTab() {
                   {!showAddCarForm ? (
                     <Pressable
                       onPress={() => setShowAddCarForm(true)}
-                      className="flex-row items-center border border-dashed border-[#0066FF] py-2 px-3.5 rounded-xl active:bg-blue-50/10 justify-center"
+                      className="flex-row items-center border border-dashed border-[#0066FF] py-2 px-3.5 rounded-xl active:bg-blue-50/10 justify-center w-full"
+                      style={isKu ? styles.rtlRow : undefined}
                     >
-                      <MaterialCommunityIcons color="#0066FF" name="plus" size={16} className="mr-1" />
+                      <MaterialCommunityIcons color="#0066FF" name="plus" size={16} style={isKu ? { marginLeft: 4 } : { marginRight: 4 }} />
                       <Text className="font-poppins-bold text-[12px] text-[#0066FF]">
-                        Add Compatible Vehicle
+                        {t.addCompatibleVehicle}
                       </Text>
                     </Pressable>
                   ) : (
-                    <View className="bg-gray-50 p-4 border border-gray-200 rounded-2xl gap-3">
-                      <View className="relative z-50">
+                    <View className="bg-gray-50 p-4 border border-gray-200 rounded-2xl gap-3 w-full" style={isKu ? styles.rtlAlign : undefined}>
+                      <View className="relative z-50 w-full">
                         <Pressable
                           onPress={() => setIsBrandDropdownOpen(!isBrandDropdownOpen)}
                           className="w-full flex-row items-center justify-between bg-white border border-gray-200 rounded-xl px-3.5 py-3"
+                          style={isKu ? styles.rtlRow : undefined}
                         >
                           <Text className="font-poppins-semibold text-[14px] text-text-primary">
                             {carBrand}
@@ -758,7 +832,7 @@ export default function ScannerTab() {
                         {isBrandDropdownOpen && (
                           <View className="absolute top-[52px] left-0 right-0 max-h-[140px] bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg z-50">
                             <ScrollView nestedScrollEnabled={true}>
-                              {BRANDS.map((brand) => (
+                              {carBrands.map((brand) => (
                                 <Pressable
                                   key={brand}
                                   onPress={() => {
@@ -766,6 +840,7 @@ export default function ScannerTab() {
                                     setIsBrandDropdownOpen(false);
                                   }}
                                   className="px-4 py-3 border-b border-gray-50 active:bg-blue-50/10"
+                                  style={isKu ? styles.rtlAlign : undefined}
                                 >
                                   <Text className="font-poppins-semibold text-[14px] text-text-primary">
                                     {brand}
@@ -780,34 +855,37 @@ export default function ScannerTab() {
                       <TextInput
                         value={carModel}
                         onChangeText={setCarModel}
-                        placeholder="Model name"
-                        className="bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 font-poppins-semibold text-[14px] text-text-primary"
+                        placeholder={t.carModelPlaceholder}
+                        placeholderTextColor="#9CA3AF"
+                        style={[{ width: "100%", backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#E5E7EB", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontFamily: "Poppins-Semibold", fontSize: 14, color: "#0F172A", textAlign: isKu ? "right" : "left" }]}
                       />
 
-                      <View className="flex-row gap-3">
+                      <View className="flex-row gap-3 w-full" style={isKu ? styles.rtlRow : undefined}>
                         <TextInput
                           value={carYearFrom}
                           onChangeText={carYearFrom => setCarYearFrom(carYearFrom)}
-                          placeholder="Year From: 2015"
+                          placeholder={t.yearFromPlaceholder}
+                          placeholderTextColor="#9CA3AF"
                           keyboardType="number-pad"
-                          className="flex-1 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 font-poppins-semibold text-[13px] text-text-primary"
+                          style={[{ flex: 1, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#E5E7EB", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontFamily: "Poppins-Semibold", fontSize: 13, color: "#0F172A", textAlign: isKu ? "right" : "left" }]}
                         />
                         <TextInput
                           value={carYearTo}
                           onChangeText={carYearTo => setCarYearTo(carYearTo)}
-                          placeholder="Year To: 2022"
+                          placeholder={t.yearToPlaceholder}
+                          placeholderTextColor="#9CA3AF"
                           keyboardType="number-pad"
-                          className="flex-1 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 font-poppins-semibold text-[13px] text-text-primary"
+                          style={[{ flex: 1, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#E5E7EB", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontFamily: "Poppins-Semibold", fontSize: 13, color: "#0F172A", textAlign: isKu ? "right" : "left" }]}
                         />
                       </View>
 
-                      <View className="flex-row justify-end gap-3 mt-1">
+                      <View className="flex-row justify-end gap-3 mt-1 w-full" style={isKu ? styles.rtlRow : undefined}>
                         <Pressable
                           onPress={() => setShowAddCarForm(false)}
                           className="px-4 py-2 rounded-xl bg-white border border-gray-200 active:bg-gray-50"
                         >
                           <Text className="font-poppins-bold text-[12px] text-text-secondary">
-                            Cancel
+                            {t.cancel}
                           </Text>
                         </Pressable>
                         <Pressable
@@ -815,7 +893,7 @@ export default function ScannerTab() {
                           className="px-4 py-2 rounded-xl bg-[#0066FF] active:bg-blue-700"
                         >
                           <Text className="font-poppins-bold text-[12px] text-white">
-                            Add Vehicle
+                            {t.addVehicle}
                           </Text>
                         </Pressable>
                       </View>
@@ -825,21 +903,21 @@ export default function ScannerTab() {
               </View>
             </ScrollView>
 
-            <View className="flex-row gap-3 mt-1">
+            <View className="gap-3 mt-1">
               <Pressable
-                onPress={handleDeletePart}
-                className="flex-1 items-center justify-center rounded-[20px] bg-red-50 border border-red-200 py-4 active:bg-red-100 shadow-sm"
+                onPress={handleEditSubmit}
+                className="w-full items-center justify-center rounded-[20px] bg-[#0066FF] py-4 active:bg-blue-700 shadow-md"
               >
-                <Text className="font-poppins-bold text-[16px] text-red-600">
-                  Delete Part
+                <Text className="font-poppins-bold text-[16px] text-white">
+                  {t.saveChanges}
                 </Text>
               </Pressable>
               <Pressable
-                onPress={handleEditSubmit}
-                className="flex-2 items-center justify-center rounded-[20px] bg-[#0066FF] py-4 active:bg-blue-700 shadow-md"
+                onPress={handleDeletePart}
+                className="w-full items-center justify-center rounded-[20px] bg-red-50 border border-red-200 py-4 active:bg-red-100 shadow-sm"
               >
-                <Text className="font-poppins-bold text-[16px] text-white">
-                  Save Changes
+                <Text className="font-poppins-bold text-[16px] text-red-600">
+                  {t.deletePart}
                 </Text>
               </Pressable>
             </View>
@@ -849,3 +927,48 @@ export default function ScannerTab() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  cameraWrapper: {
+    borderRadius: 20,
+    overflow: "hidden", // Wrap the entire camera section in a View with overflow: 'hidden'
+    width: "100%",
+    height: Dimensions.get("window").height * 0.45,
+    maxWidth: 325,
+    backgroundColor: "#000000",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+  overlayContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cameraContainer: {
+    borderRadius: 20,
+    overflow: "hidden",
+    width: "100%",
+    height: "100%",
+    elevation: 0, // Android ignores borderRadius on native views. Use built-in View with elevation: 0
+  },
+  camera: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 20, // Add borderRadius directly to the CameraView style prop itself (iOS)
+    overflow: "hidden",
+  },
+  rtlRow: {
+    flexDirection: "row-reverse",
+  },
+  rtlText: {
+    textAlign: "right",
+    writingDirection: "rtl",
+  },
+  rtlAlign: {
+    alignItems: "flex-end",
+  },
+});

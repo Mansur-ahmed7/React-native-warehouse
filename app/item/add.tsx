@@ -15,11 +15,12 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { BRANDS } from "@/data/brands";
+import { useCarBrands } from "@/data/brands";
 import { Brand, CarCompatibility, ItemCondition } from "@/types/inventory";
 
 export default function AddItemScreen() {
   const insets = useSafeAreaInsets();
+  const carBrands = useCarBrands();
 
   // Photo state
   const [photoUri, setPhotoUri] = useState<string | null>(null);
@@ -212,7 +213,7 @@ export default function AddItemScreen() {
   };
 
   // Brand list for compatibility form (omit "All")
-  const brandList = BRANDS.filter((b) => b !== "All") as Brand[];
+  const brandList = carBrands.filter((b) => b !== "All") as Brand[];
 
   return (
     <KeyboardAvoidingView
@@ -318,7 +319,7 @@ export default function AddItemScreen() {
               Condition
             </Text>
             <View className="w-full flex-row bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-              {(["New", "Used", "Refurbished"] as ItemCondition[]).map(
+              {(["New", "Used"] as ItemCondition[]).map(
                 (cond, idx) => {
                   const isSelected = condition === cond;
                   return (

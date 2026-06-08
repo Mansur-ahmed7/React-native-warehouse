@@ -1,5 +1,5 @@
-export const BRANDS: string[] = [
-  'Toyota', 'Kia', 'Hyundai', 'BMW', 'Audi', 'Mercedes',
-  'Nissan', 'Honda', 'Mitsubishi', 'Volkswagen',
-  'Ford', 'Chevrolet', 'Mazda', 'Subaru', 'Lexus'
-];
+import { useWarehouseStore } from "../store/useWarehouseStore";
+
+export function useCarBrands() {
+  return useWarehouseStore((s) => s.carBrands);
+}

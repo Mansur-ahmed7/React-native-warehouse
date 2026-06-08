@@ -14,15 +14,17 @@ import {
   Text,
   TextInput,
   View,
+  StyleSheet,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { images } from "../constants/images";
-import { BRANDS } from "../data/brands";
+import { useCarBrands } from "../data/brands";
 import { useWarehouseStore } from "../store/useWarehouseStore";
 import { CompatibleCar, Condition, Part } from "../types/inventory";
 
 export default function InventoryTab() {
   const insets = useSafeAreaInsets();
+  const carBrands = useCarBrands();
 
   // Store Slices & Actions
   const {
@@ -35,6 +37,67 @@ export default function InventoryTab() {
     deletePart,
     triggerToast,
   } = useWarehouseStore();
+
+  const isKu = settings.language === "ku";
+
+  // Kurdish Localized Strings
+  const t = {
+    title: isKu ? "کۆگا" : "Inventory",
+    searchPlaceholder: isKu ? "بگەڕێ بۆ پارچەکان..." : "Search parts...",
+    all: isKu ? "هەمووی" : "All",
+    noPartsFound: isKu ? "هیچ پارچەیەک نەدۆزرایەوە" : "No parts found",
+    refineSearch: isKu ? "هەوڵبدە گەڕانەکەت یان فلتەرەکانت بگۆڕیت." : "Try refining your search or brand filters.",
+    buy: isKu ? "کڕین:" : "Buy:",
+    universal: isKu ? "گشتگیر" : "Universal",
+    inStock: isKu ? "لە کۆگادایە" : "In Stock",
+    lowStock: isKu ? "کەمبووەتەوە" : "Low Stock",
+    outOfStock: isKu ? "نەماوە" : "Out of Stock",
+    addToSale: isKu ? "+ زیادکردن بۆ فرۆشتن" : "+ Add to Sale",
+    addNewPart: isKu ? "زیادکردنی پارچەی نوێ" : "Add New Part",
+    partImage: isKu ? "وێنەی پارچە" : "Part Image",
+    tapAddPhoto: isKu ? "تەپ بکە بۆ زیادکردنی وێنە" : "Tap to add photo",
+    partName: isKu ? "ناوی پارچە" : "Part Name",
+    partNamePlaceholder: isKu ? "بۆ نموونە سێتی پد بڕێک" : "e.g. Brake Pad Set",
+    partNumber: isKu ? "ژمارەی پارچە" : "Part Number",
+    partNumberPlaceholder: isKu ? "بۆ نموونە 04465-0R040" : "e.g. 04465-0R040",
+    compModel: isKu ? "ناوی مۆدێلی گونجاو" : "Compatibility Model Name",
+    compModelPlaceholder: isKu ? "بۆ نموونە Camry" : "e.g. Camry",
+    brand: isKu ? "مارکە" : "Brand",
+    quantity: isKu ? "بڕ" : "Quantity",
+    lowStockAlert: isKu ? "ئاستی هۆشداری" : "Low Stock Alert",
+    buyPriceUSD: isKu ? "نرخی کڕین (USD)" : "Buy Price (USD)",
+    sellPriceIQD: isKu ? "نرخی فرۆشتن (IQD)" : "Sell Price (IQD)",
+    addToInventory: isKu ? "زیادکردن بۆ کۆگا" : "Add to Inventory",
+    editPartDetail: isKu ? "دەستکاریکردنی زانیارییەکانی پارچە" : "Edit Part Detail",
+    condition: isKu ? "بارودۆخ" : "Condition",
+    compatibleCars: isKu ? "ئۆتۆمبێلە گونجاوەکان" : "Compatible Cars",
+    addCompatibleVehicle: isKu ? "زیادکردنی ئۆتۆمبێلی گونجاو" : "Add Compatible Vehicle",
+    carModelPlaceholder: isKu ? "ناوی مۆدێل (بۆ نموونە Camry)" : "Model name (e.g. Camry)",
+    yearFromPlaceholder: isKu ? "لە ساڵی: ٢٠١٥" : "Year From: 2015",
+    yearToPlaceholder: isKu ? "تا ساڵی: ٢٠٢٢" : "Year To: 2022",
+    cancel: isKu ? "پاشگەزبوونەوە" : "Cancel",
+    addVehicle: isKu ? "زیادکردنی ئۆتۆمبێل" : "Add Vehicle",
+    deletePart: isKu ? "ڕەشکردنەوەی پارچە" : "Delete Part",
+    saveChanges: isKu ? "پاشەکەوتکردنی گۆڕانکارییەکان" : "Save Changes",
+    // Dialog/Alert strings
+    deleteConfirmTitle: isKu ? "ڕەشکردنەوەی پارچە" : "Delete Part",
+    deleteConfirmMsg: (name: string) => isKu ? `ئایا دڵنیای لە ڕەشکردنەوەی ${name}؟` : `Are you sure you want to delete ${name}?`,
+    delete: isKu ? "ڕەشکردنەوە" : "Delete",
+    attachPhoto: isKu ? "هاوپێچکردنی وێنە" : "Attach Photo",
+    choosePhotoOption: isKu ? "شێوازی هەڵبژاردنی وێنە دیاری بکە" : "Choose a photo option",
+    takePhoto: isKu ? "وێنەگرتن" : "Take Photo",
+    chooseGallery: isKu ? "هەڵبژاردن لە گەلەری" : "Choose from Gallery",
+    permissionNeeded: isKu ? "پێویستی بە ڕێگەدان هەیە" : "Permission Needed",
+    cameraPermissionMsg: isKu ? "تکایە ڕێگە بە کامێرا بدە بۆ وێنەگرتن." : "Please allow camera access to take pictures.",
+    galleryPermissionMsg: isKu ? "تکایە ڕێگە بە گەلەری بدە بۆ هاوپێچکردنی وێنە." : "Please allow photo library access to attach pictures.",
+    errorTitle: isKu ? "هەڵە" : "Error",
+    fillRequired: isKu ? "تکایە هەموو خانە پێویستەکان پڕ بکەرەوە." : "Please fill in all required fields.",
+    fillVehicleError: isKu ? "تکایە مۆدێلی ئۆتۆمبێل و ساڵی کۆتایی بنووسە." : "Please fill in vehicle model and end year.",
+    partAddedToast: (name: string) => isKu ? `✓ ${name} بۆ کۆگا زیادکرا` : `✓ ${name} added to inventory`,
+    partUpdatedToast: isKu ? "✓ زانیارییەکان بە سەرکەوتوویی نوێکرانەوە" : "✓ Part updated successfully",
+    partDeletedToast: (name: string) => isKu ? `✗ ${name} ڕەشکرایەوە` : `✗ ${name} deleted`,
+    partAddedSaleToast: (name: string) => isKu ? `✓ ${name} بۆ فرۆشتن زیادکرا` : `✓ ${name} added to sale`,
+  };
 
   // Local Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -66,9 +129,7 @@ export default function InventoryTab() {
   const [editCondition, setEditCondition] = useState<Condition>("new");
   const [editSupplier, setEditSupplier] = useState("");
   const [editThreshold, setEditThreshold] = useState("");
-  const [editCompatibleCars, setEditCompatibleCars] = useState<CompatibleCar[]>(
-    [],
-  );
+  const [editCompatibleCars, setEditCompatibleCars] = useState<CompatibleCar[]>([]);
 
   // Inline Add Compatible Car inside Edit Modal
   const [showAddCarForm, setShowAddCarForm] = useState(false);
@@ -78,18 +139,18 @@ export default function InventoryTab() {
   const [carYearTo, setCarYearTo] = useState("");
   const [isBrandDropdownOpen, setIsBrandDropdownOpen] = useState(false);
 
-  // Compute unique brands from the compatibleCars database
-  const activeCompatibleBrands = Array.from(
-    new Set(parts.flatMap((p) => p.compatibleCars.map((c) => c.brand))),
-  ).sort();
-  const brandFilters = ["All", ...activeCompatibleBrands];
+  const brandFilters = [isKu ? "هەمووی" : "All", ...carBrands];
+  // Helper to match selection across languages
+  const getSelectedBrandKey = () => {
+    if (selectedBrand === "هەمووی" || selectedBrand === "All") return "All";
+    return selectedBrand;
+  };
 
   const newBuyPriceIQDPreview = Math.round(
-    (parseFloat(newBuyPriceUSD.replace(/,/g, "")) || 0) * settings.exchangeRate,
+    (parseFloat(newBuyPriceUSD.replace(/,/g, "")) || 0) * settings.exchangeRate
   );
   const editBuyPriceIQDPreview = Math.round(
-    (parseFloat(editBuyPriceUSD.replace(/,/g, "")) || 0) *
-      settings.exchangeRate,
+    (parseFloat(editBuyPriceUSD.replace(/,/g, "")) || 0) * settings.exchangeRate
   );
 
   // Map parts to their premium product images
@@ -116,7 +177,7 @@ export default function InventoryTab() {
 
   const handleImageResult = (
     result: ImagePicker.ImagePickerResult,
-    target: "new" | "edit",
+    target: "new" | "edit"
   ) => {
     if (result.canceled || !result.assets || !result.assets[0]?.uri) return;
     if (target === "new") {
@@ -127,16 +188,13 @@ export default function InventoryTab() {
   };
 
   const pickPartImage = (target: "new" | "edit") => {
-    Alert.alert("Attach Photo", "Choose a photo option", [
+    Alert.alert(t.attachPhoto, t.choosePhotoOption, [
       {
-        text: "Take Photo",
+        text: t.takePhoto,
         onPress: async () => {
           const permission = await ImagePicker.requestCameraPermissionsAsync();
           if (!permission.granted) {
-            Alert.alert(
-              "Permission Needed",
-              "Please allow camera access to take pictures.",
-            );
+            Alert.alert(t.permissionNeeded, t.cameraPermissionMsg);
             return;
           }
           const result = await ImagePicker.launchCameraAsync({
@@ -149,15 +207,11 @@ export default function InventoryTab() {
         },
       },
       {
-        text: "Choose from Gallery",
+        text: t.chooseGallery,
         onPress: async () => {
-          const permission =
-            await ImagePicker.requestMediaLibraryPermissionsAsync();
+          const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
           if (!permission.granted) {
-            Alert.alert(
-              "Permission Needed",
-              "Please allow photo library access to attach pictures.",
-            );
+            Alert.alert(t.permissionNeeded, t.galleryPermissionMsg);
             return;
           }
           const result = await ImagePicker.launchImageLibraryAsync({
@@ -169,7 +223,7 @@ export default function InventoryTab() {
           handleImageResult(result, target);
         },
       },
-      { text: "Cancel", style: "cancel" },
+      { text: t.cancel, style: "cancel" },
     ]);
   };
 
@@ -177,31 +231,29 @@ export default function InventoryTab() {
   const filteredParts = parts.filter((part) => {
     const matchesSearch =
       part.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (part.nameKu && part.nameKu.toLowerCase().includes(searchQuery.toLowerCase())) ||
       part.partNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
       part.compatibleCars.some((c) =>
-        `${c.brand} ${c.model}`
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()),
+        `${c.brand} ${c.model}`.toLowerCase().includes(searchQuery.toLowerCase())
       );
 
+    const brandKey = getSelectedBrandKey();
     const matchesBrand =
-      selectedBrand === "All" ||
-      part.compatibleCars.some((c) => c.brand === selectedBrand);
+      brandKey === "All" ||
+      part.compatibleCars.some((c) => c.brand.toLowerCase() === brandKey.toLowerCase());
 
     return matchesSearch && matchesBrand;
   });
 
   // Calculate profit margin for a part
   const getProfit = (part: Part) => {
-    return (
-      part.sellPriceIQD - Math.round(part.buyPriceUSD * settings.exchangeRate)
-    );
+    return part.sellPriceIQD - Math.round(part.buyPriceUSD * settings.exchangeRate);
   };
 
   // Handle Add Item Submit
   const handleAddSubmit = () => {
     if (!newName || !newPartNumber || !newBuyPriceUSD || !newSellPriceIQD) {
-      Alert.alert("Error", "Please fill in all required fields.");
+      Alert.alert(t.errorTitle, t.fillRequired);
       return;
     }
 
@@ -213,14 +265,7 @@ export default function InventoryTab() {
     const newPart: Part = {
       id: `part-${Date.now()}`,
       name: newName,
-      nameKu:
-        newName === "Brake Pad Set"
-          ? "سێتی پد بڕێک"
-          : newName === "Oil Filter"
-            ? "فلتەری نەوت"
-            : newName === "Spark Plug"
-              ? "شەمەی مۆتۆر"
-              : "پات بەش نوێ",
+      nameKu: newName, // Default nameKu directly to the entered name
       partNumber: newPartNumber,
       condition: newCondition,
       supplier: newSupplier,
@@ -238,13 +283,13 @@ export default function InventoryTab() {
             },
           ]
         : [],
-      status: "inStock", // computed by store
+      status: "inStock",
       imageUri: newPhotoUri,
     };
 
     addPart(newPart);
     setIsAddModalVisible(false);
-    triggerToast(`✓ ${newName} added to inventory`);
+    triggerToast(t.partAddedToast(newName));
 
     // Reset Form
     setNewName("");
@@ -299,7 +344,7 @@ export default function InventoryTab() {
     });
 
     setIsEditModalVisible(false);
-    triggerToast("✓ Part updated successfully");
+    triggerToast(t.partUpdatedToast);
   };
 
   // Handle Delete Part
@@ -307,27 +352,27 @@ export default function InventoryTab() {
     if (!editingPart) return;
 
     Alert.alert(
-      "Delete Part",
-      `Are you sure you want to delete ${editingPart.name}?`,
+      t.deleteConfirmTitle,
+      t.deleteConfirmMsg(editingPart.name),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t.cancel, style: "cancel" },
         {
-          text: "Delete",
+          text: t.delete,
           style: "destructive",
           onPress: () => {
             deletePart(editingPart.id);
             setIsEditModalVisible(false);
-            triggerToast(`✗ ${editingPart.name} deleted`);
+            triggerToast(t.partDeletedToast(editingPart.name));
           },
         },
-      ],
+      ]
     );
   };
 
   // Add Compatible Car Chip
   const addCompatibleCar = () => {
     if (!carModel || !carYearTo) {
-      Alert.alert("Error", "Please fill in vehicle model and end year.");
+      Alert.alert(t.errorTitle, t.fillVehicleError);
       return;
     }
     const fromYear = parseInt(carYearFrom) || 2015;
@@ -366,7 +411,7 @@ export default function InventoryTab() {
         } else {
           Animated.spring(addModalY, { toValue: 0, bounciness: 8, useNativeDriver: true }).start();
         }
-      }
+      },
     })
   ).current;
 
@@ -388,7 +433,7 @@ export default function InventoryTab() {
         } else {
           Animated.spring(editModalY, { toValue: 0, bounciness: 8, useNativeDriver: true }).start();
         }
-      }
+      },
     })
   ).current;
 
@@ -397,7 +442,7 @@ export default function InventoryTab() {
       {/* Header Section */}
       <View className="flex-row items-center justify-between px-6 mb-5">
         <Text className="font-poppins-bold text-[34px] text-text-primary leading-[42px]">
-          Inventory
+          {t.title}
         </Text>
         <Pressable
           onPress={() => setIsAddModalVisible(true)}
@@ -419,17 +464,13 @@ export default function InventoryTab() {
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search parts..."
+            placeholder={t.searchPlaceholder}
             placeholderTextColor="#9CA3AF"
             className="flex-1 font-poppins-medium text-[15px] text-text-primary p-0 m-0"
           />
           {searchQuery !== "" && (
             <Pressable onPress={() => setSearchQuery("")}>
-              <MaterialCommunityIcons
-                color="#9CA3AF"
-                name="close-circle"
-                size={18}
-              />
+              <MaterialCommunityIcons color="#9CA3AF" name="close-circle" size={18} />
             </Pressable>
           )}
         </View>
@@ -448,15 +489,9 @@ export default function InventoryTab() {
               <Pressable
                 key={brand}
                 onPress={() => setSelectedBrand(brand)}
-                className={`px-6 py-2 rounded-full ${
-                  isSelected ? "bg-[#0066FF]" : "bg-gray-105"
-                }`}
+                className={`px-6 py-2 rounded-full ${isSelected ? "bg-[#0066FF]" : "bg-gray-105"}`}
               >
-                <Text
-                  className={`font-poppins-semibold text-[14px] ${
-                    isSelected ? "text-white" : "text-text-primary"
-                  }`}
-                >
+                <Text className={`font-poppins-semibold text-[14px] ${isSelected ? "text-white" : "text-text-primary"}`}>
                   {brand}
                 </Text>
               </Pressable>
@@ -475,16 +510,12 @@ export default function InventoryTab() {
       >
         {filteredParts.length === 0 ? (
           <View className="items-center justify-center py-10 bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
-            <MaterialCommunityIcons
-              color="#9CA3AF"
-              name="package-variant-closed"
-              size={48}
-            />
+            <MaterialCommunityIcons color="#9CA3AF" name="package-variant-closed" size={48} />
             <Text className="font-poppins-semibold text-[16px] text-text-primary mt-3 text-center">
-              No parts found
+              {t.noPartsFound}
             </Text>
             <Text className="font-poppins-medium text-[13px] text-text-secondary mt-1 text-center">
-              Try refining your search or brand filters.
+              {t.refineSearch}
             </Text>
           </View>
         ) : (
@@ -496,14 +527,18 @@ export default function InventoryTab() {
             let statusBg = "bg-green-50 border-green-200";
             let statusText = "text-green-700";
             let statusIcon = "check-circle";
+            let statusLabel = t.inStock;
+
             if (part.status === "lowStock") {
               statusBg = "bg-amber-50 border-amber-200";
               statusText = "text-amber-700";
               statusIcon = "alert-circle";
+              statusLabel = t.lowStock;
             } else if (part.status === "outOfStock") {
               statusBg = "bg-red-50 border-red-200";
               statusText = "text-red-700";
               statusIcon = "close-circle";
+              statusLabel = t.outOfStock;
             }
 
             return (
@@ -532,25 +567,28 @@ export default function InventoryTab() {
                   </View>
 
                   {/* Descriptions block */}
-                  <View className="flex-1 justify-between h-[100px] py-1">
-                    <View className="flex-row justify-between items-start">
-                      <View className="flex-1 mr-2">
+                  <View className="flex-1 justify-between min-h-[100px] py-1">
+                    <View className="flex-row justify-between items-start w-full">
+                      <View className="flex-1 mr-2 overflow-hidden">
                         <Text
                           className="font-poppins-bold text-[17px] text-text-primary leading-[22px]"
                           numberOfLines={1}
                         >
                           {part.name}
                         </Text>
-                        <Text className="font-poppins-semibold text-[13px] text-gray-400 mt-0.5 leading-[16px]">
+                        <Text
+                          className="font-poppins-semibold text-[13px] text-gray-400 mt-0.5 leading-[16px]"
+                          numberOfLines={1}
+                        >
                           {part.partNumber}
                         </Text>
                       </View>
-                      <View className="items-end">
+                      <View className="w-[90px] shrink-0 items-end">
                         <Text className="font-poppins-bold text-[16px] text-text-primary leading-[20px]">
                           {part.sellPriceIQD.toLocaleString()} IQD
                         </Text>
                         <Text className="font-poppins-semibold text-[12px] text-gray-400 mt-0.5">
-                          Buy: ${part.buyPriceUSD.toFixed(2)}
+                          {t.buy} ${part.buyPriceUSD.toFixed(2)}
                         </Text>
                       </View>
                     </View>
@@ -561,13 +599,13 @@ export default function InventoryTab() {
                         <Text className="font-poppins-semibold text-[11px] text-[#0066FF]">
                           {part.compatibleCars[0]
                             ? `${part.compatibleCars[0].brand} ${part.compatibleCars[0].model} ${part.compatibleCars[0].yearFrom}-${part.compatibleCars[0].yearTo}`
-                            : "Universal"}
+                            : t.universal}
                         </Text>
                       </View>
                     </View>
 
                     {/* Bottom Status Info */}
-                    <View className="flex-row items-center justify-between mt-2.5">
+                    <View className="flex-row items-center justify-between mt-2.5 w-full">
                       <View className="flex-row items-center">
                         <View
                           className={`flex-row items-center px-2 py-0.5 rounded-md border ${statusBg}`}
@@ -577,14 +615,8 @@ export default function InventoryTab() {
                             size={13}
                             className={`mr-1 ${statusText}`}
                           />
-                          <Text
-                            className={`font-poppins-bold text-[11px] ${statusText}`}
-                          >
-                            {part.status === "inStock"
-                              ? "In Stock"
-                              : part.status === "lowStock"
-                                ? "Low Stock"
-                                : "Out of Stock"}
+                          <Text className={`font-poppins-bold text-[11px] ${statusText}`}>
+                            {statusLabel}
                           </Text>
                         </View>
                         <Text className="font-poppins-bold text-[13px] text-text-secondary ml-2">
@@ -608,7 +640,7 @@ export default function InventoryTab() {
                   {part.status === "outOfStock" ? (
                     <View className="px-4 py-2 rounded-xl bg-gray-100 border border-gray-200">
                       <Text className="font-poppins-bold text-[12px] text-red-500">
-                        Out of Stock
+                        {t.outOfStock}
                       </Text>
                     </View>
                   ) : (
@@ -616,7 +648,7 @@ export default function InventoryTab() {
                       onPress={() => {
                         addToCart(part.id);
                         setActiveTab("sale");
-                        triggerToast(`✓ ${part.name} added to sale`);
+                        triggerToast(t.partAddedSaleToast(part.name));
                       }}
                       className="flex-row items-center bg-[#0066FF] px-4 py-2 rounded-xl active:bg-blue-700"
                     >
@@ -627,7 +659,7 @@ export default function InventoryTab() {
                         className="mr-1.5"
                       />
                       <Text className="font-poppins-bold text-[12px] text-white">
-                        + Add to Sale
+                        {t.addToSale}
                       </Text>
                     </Pressable>
                   )}
@@ -649,44 +681,38 @@ export default function InventoryTab() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1 justify-end bg-black/60"
         >
-          <Pressable
-            className="flex-1"
-            onPress={() => setIsAddModalVisible(false)}
-          />
-          <Animated.View 
-            style={{ transform: [{ translateY: addModalY }], height: '85%' }}
+          <Pressable className="flex-1" onPress={() => setIsAddModalVisible(false)} />
+          <Animated.View
+            style={{ transform: [{ translateY: addModalY }], height: "85%" }}
             className="w-full bg-white rounded-t-[36px] px-6 pb-8 pt-2 shadow-2xl flex-col"
           >
             {/* Draggable Handle */}
-            <View {...addPanResponder.panHandlers} className="w-full py-4 -mb-2 mt-0 z-10" style={{ cursor: 'pointer' }}>
+            <View
+              {...addPanResponder.panHandlers}
+              className="w-full py-4 -mb-2 mt-0 z-10"
+              style={{ cursor: "pointer" }}
+            >
               <View className="w-12 h-1.5 bg-gray-200 rounded-full align-self-center mx-auto" />
             </View>
 
-            <View className="flex-row items-center justify-between mb-5">
-              <Text className="font-poppins-bold text-[24px] text-text-primary">
-                Add New Part
+            <View className="flex-row items-center justify-between mb-5 gap-3">
+              <Text className="font-poppins-bold text-[24px] text-text-primary flex-1">
+                {t.addNewPart}
               </Text>
               <Pressable
                 onPress={() => setIsAddModalVisible(false)}
                 className="w-9 h-9 items-center justify-center rounded-full bg-gray-100 active:bg-gray-200"
               >
-                <MaterialCommunityIcons
-                  color="#0F172A"
-                  name="close"
-                  size={22}
-                />
+                <MaterialCommunityIcons color="#0F172A" name="close" size={22} />
               </Pressable>
             </View>
 
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              className="flex-1 mb-5"
-            >
+            <ScrollView showsVerticalScrollIndicator={false} className="flex-1 mb-5">
               <View className="gap-4">
                 {/* Photo Upload */}
                 <View>
                   <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                    Part Image
+                    {t.partImage}
                   </Text>
                   <Pressable
                     onPress={() => pickPartImage("new")}
@@ -700,13 +726,9 @@ export default function InventoryTab() {
                       />
                     ) : (
                       <View className="items-center">
-                        <MaterialCommunityIcons
-                          name="camera-plus"
-                          size={32}
-                          color="#9CA3AF"
-                        />
+                        <MaterialCommunityIcons name="camera-plus" size={32} color="#9CA3AF" />
                         <Text className="font-poppins-medium text-[13px] text-[#9CA3AF] mt-2">
-                          Tap to add photo
+                          {t.tapAddPhoto}
                         </Text>
                       </View>
                     )}
@@ -715,12 +737,12 @@ export default function InventoryTab() {
 
                 <View>
                   <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                    Part Name
+                    {t.partName}
                   </Text>
                   <TextInput
                     value={newName}
                     onChangeText={setNewName}
-                    placeholder="e.g. Brake Pad Set"
+                    placeholder={t.partNamePlaceholder}
                     placeholderTextColor="#9CA3AF"
                     className="w-full bg-[#F6F7FB] border border-gray-100 rounded-xl px-4 py-3 font-poppins-semibold text-[15px] text-text-primary"
                   />
@@ -728,12 +750,12 @@ export default function InventoryTab() {
 
                 <View>
                   <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                    Part Number
+                    {t.partNumber}
                   </Text>
                   <TextInput
                     value={newPartNumber}
                     onChangeText={setNewPartNumber}
-                    placeholder="e.g. 04465-0R040"
+                    placeholder={t.partNumberPlaceholder}
                     placeholderTextColor="#9CA3AF"
                     className="w-full bg-[#F6F7FB] border border-gray-100 rounded-xl px-4 py-3 font-poppins-semibold text-[15px] text-text-primary"
                   />
@@ -741,12 +763,12 @@ export default function InventoryTab() {
 
                 <View>
                   <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                    Compatibility Model Name
+                    {t.compModel}
                   </Text>
                   <TextInput
                     value={newCompatibility}
                     onChangeText={setNewCompatibility}
-                    placeholder="e.g. Camry"
+                    placeholder={t.compModelPlaceholder}
                     placeholderTextColor="#9CA3AF"
                     className="w-full bg-[#F6F7FB] border border-gray-100 rounded-xl px-4 py-3 font-poppins-semibold text-[15px] text-text-primary"
                   />
@@ -754,26 +776,20 @@ export default function InventoryTab() {
 
                 <View>
                   <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                    Brand
+                    {t.brand}
                   </Text>
                   <View className="flex-row gap-2 flex-wrap">
-                    {BRANDS.map((b) => {
+                    {carBrands.map((b) => {
                       const isSelected = newBrand === b;
                       return (
                         <Pressable
                           key={b}
                           onPress={() => setNewBrand(b)}
                           className={`px-4 py-2 rounded-full border ${
-                            isSelected
-                              ? "bg-[#0066FF] border-[#0066FF]"
-                              : "bg-white border-gray-200"
+                            isSelected ? "bg-[#0066FF] border-[#0066FF]" : "bg-white border-gray-200"
                           }`}
                         >
-                          <Text
-                            className={`font-poppins-semibold text-[13px] ${
-                              isSelected ? "text-white" : "text-text-primary"
-                            }`}
-                          >
+                          <Text className={`font-poppins-semibold text-[13px] ${isSelected ? "text-white" : "text-text-primary"}`}>
                             {b}
                           </Text>
                         </Pressable>
@@ -785,7 +801,7 @@ export default function InventoryTab() {
                 <View className="flex-row gap-4">
                   <View className="flex-1">
                     <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Quantity
+                      {t.quantity}
                     </Text>
                     <TextInput
                       value={newQuantity}
@@ -796,7 +812,7 @@ export default function InventoryTab() {
                   </View>
                   <View className="flex-1">
                     <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Low Stock Alert
+                      {t.lowStockAlert}
                     </Text>
                     <TextInput
                       value={newThreshold}
@@ -810,7 +826,7 @@ export default function InventoryTab() {
                 <View className="flex-row gap-4">
                   <View className="flex-1">
                     <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Buy Price (USD)
+                      {t.buyPriceUSD}
                     </Text>
                     <TextInput
                       value={newBuyPriceUSD}
@@ -829,16 +845,12 @@ export default function InventoryTab() {
                   </View>
                   <View className="flex-1">
                     <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Sell Price (IQD)
+                      {t.sellPriceIQD}
                     </Text>
                     <TextInput
                       value={newSellPriceIQD}
                       onChangeText={(t) =>
-                        setNewSellPriceIQD(
-                          t
-                            .replace(/[^0-9]/g, "")
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ","),
-                        )
+                        setNewSellPriceIQD(t.replace(/[^0-9]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","))
                       }
                       keyboardType="number-pad"
                       className="w-full bg-[#F6F7FB] border border-gray-100 rounded-xl px-4 py-3 font-poppins-semibold text-[15px] text-text-primary"
@@ -853,7 +865,7 @@ export default function InventoryTab() {
               className="w-full items-center justify-center rounded-[20px] bg-[#0066FF] py-4.5 active:bg-blue-700 shadow-md"
             >
               <Text className="font-poppins-semibold text-[17px] text-white">
-                Add to Inventory
+                {t.addToInventory}
               </Text>
             </Pressable>
           </Animated.View>
@@ -871,44 +883,38 @@ export default function InventoryTab() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1 justify-end bg-black/60"
         >
-          <Pressable
-            className="flex-1"
-            onPress={() => setIsEditModalVisible(false)}
-          />
-          <Animated.View 
-            style={{ transform: [{ translateY: editModalY }], height: '85%' }}
+          <Pressable className="flex-1" onPress={() => setIsEditModalVisible(false)} />
+          <Animated.View
+            style={{ transform: [{ translateY: editModalY }], height: "85%" }}
             className="w-full bg-white rounded-t-[36px] px-6 pb-8 pt-2 shadow-2xl flex-col"
           >
             {/* Draggable Handle */}
-            <View {...editPanResponder.panHandlers} className="w-full py-4 -mb-2 mt-0 z-10" style={{ cursor: 'pointer' }}>
+            <View
+              {...editPanResponder.panHandlers}
+              className="w-full py-4 -mb-2 mt-0 z-10"
+              style={{ cursor: "pointer" }}
+            >
               <View className="w-12 h-1.5 bg-gray-200 rounded-full align-self-center mx-auto" />
             </View>
 
-            <View className="flex-row items-center justify-between mb-5">
-              <Text className="font-poppins-bold text-[24px] text-text-primary">
-                Edit Part Detail
+            <View className="flex-row items-center justify-between mb-5 gap-3">
+              <Text className="font-poppins-bold text-[24px] text-text-primary flex-1">
+                {t.editPartDetail}
               </Text>
               <Pressable
                 onPress={() => setIsEditModalVisible(false)}
                 className="w-9 h-9 items-center justify-center rounded-full bg-gray-100 active:bg-gray-200"
               >
-                <MaterialCommunityIcons
-                  color="#0F172A"
-                  name="close"
-                  size={22}
-                />
+                <MaterialCommunityIcons color="#0F172A" name="close" size={22} />
               </Pressable>
             </View>
 
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              className="flex-1 mb-5"
-            >
+            <ScrollView showsVerticalScrollIndicator={false} className="flex-1 mb-5">
               <View className="gap-4">
                 {/* Photo Upload */}
                 <View>
                   <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                    Part Image
+                    {t.partImage}
                   </Text>
                   <Pressable
                     onPress={() => pickPartImage("edit")}
@@ -928,13 +934,9 @@ export default function InventoryTab() {
                       />
                     ) : (
                       <View className="items-center">
-                        <MaterialCommunityIcons
-                          name="camera-plus"
-                          size={32}
-                          color="#9CA3AF"
-                        />
+                        <MaterialCommunityIcons name="camera-plus" size={32} color="#9CA3AF" />
                         <Text className="font-poppins-medium text-[13px] text-[#9CA3AF] mt-2">
-                          Tap to add photo
+                          {t.tapAddPhoto}
                         </Text>
                       </View>
                     )}
@@ -944,7 +946,7 @@ export default function InventoryTab() {
                 {/* Part Name */}
                 <View>
                   <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                    Part Name
+                    {t.partName}
                   </Text>
                   <TextInput
                     value={editName}
@@ -957,7 +959,7 @@ export default function InventoryTab() {
                 <View className="flex-row gap-4">
                   <View className="flex-1">
                     <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Part Number
+                      {t.partNumber}
                     </Text>
                     <TextInput
                       value={editPartNumber}
@@ -967,32 +969,33 @@ export default function InventoryTab() {
                   </View>
                   <View className="flex-1">
                     <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Condition
+                      {t.condition}
                     </Text>
                     <View className="flex-row border border-gray-200 rounded-xl overflow-hidden h-[48px]">
-                      {(["new", "used", "refurbished"] as Condition[]).map(
-                        (cond) => (
+                      {(["new", "used"] as Condition[]).map((cond) => {
+                        let condLabel = cond;
+                        if (isKu) {
+                          if (cond === "new") condLabel = "نوێ" as any;
+                          if (cond === "used") condLabel = "بەکارهاتوو" as any;
+                        }
+                        return (
                           <Pressable
                             key={cond}
                             onPress={() => setEditCondition(cond)}
                             className={`flex-1 items-center justify-center ${
-                              editCondition === cond
-                                ? "bg-[#0066FF]"
-                                : "bg-white"
+                              editCondition === cond ? "bg-[#0066FF]" : "bg-white"
                             }`}
                           >
                             <Text
                               className={`font-poppins-bold text-[11px] uppercase ${
-                                editCondition === cond
-                                  ? "text-white"
-                                  : "text-text-primary"
+                                editCondition === cond ? "text-white" : "text-text-primary"
                               }`}
                             >
-                              {cond}
+                              {condLabel}
                             </Text>
                           </Pressable>
-                        ),
-                      )}
+                        );
+                      })}
                     </View>
                   </View>
                 </View>
@@ -1001,7 +1004,7 @@ export default function InventoryTab() {
                 <View className="flex-row gap-4">
                   <View className="flex-1">
                     <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Quantity
+                      {t.quantity}
                     </Text>
                     <TextInput
                       value={editQuantity}
@@ -1012,7 +1015,7 @@ export default function InventoryTab() {
                   </View>
                   <View className="flex-1">
                     <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Alert Threshold
+                      {t.lowStockAlert}
                     </Text>
                     <TextInput
                       value={editThreshold}
@@ -1027,7 +1030,7 @@ export default function InventoryTab() {
                 <View className="flex-row gap-4">
                   <View className="flex-1">
                     <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Buy Price (USD)
+                      {t.buyPriceUSD}
                     </Text>
                     <TextInput
                       value={editBuyPriceUSD}
@@ -1046,16 +1049,12 @@ export default function InventoryTab() {
                   </View>
                   <View className="flex-1">
                     <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-1.5">
-                      Sell Price (IQD)
+                      {t.sellPriceIQD}
                     </Text>
                     <TextInput
                       value={editSellPriceIQD}
                       onChangeText={(t) =>
-                        setEditSellPriceIQD(
-                          t
-                            .replace(/[^0-9]/g, "")
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ","),
-                        )
+                        setEditSellPriceIQD(t.replace(/[^0-9]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","))
                       }
                       keyboardType="number-pad"
                       className="w-full bg-[#F6F7FB] border border-gray-100 rounded-xl px-4 py-3 font-poppins-semibold text-[15px] text-text-primary"
@@ -1066,7 +1065,7 @@ export default function InventoryTab() {
                 {/* Compatible Vehicles */}
                 <View>
                   <Text className="font-poppins-semibold text-[13px] text-text-secondary mb-2">
-                    Compatible Cars
+                    {t.compatibleCars}
                   </Text>
                   <View className="flex-row flex-wrap gap-2 mb-3">
                     {editCompatibleCars.map((car, idx) => (
@@ -1079,16 +1078,10 @@ export default function InventoryTab() {
                         </Text>
                         <Pressable
                           onPress={() =>
-                            setEditCompatibleCars(
-                              editCompatibleCars.filter((_, i) => i !== idx),
-                            )
+                            setEditCompatibleCars(editCompatibleCars.filter((_, i) => i !== idx))
                           }
                         >
-                          <MaterialCommunityIcons
-                            color="#0066FF"
-                            name="close-circle"
-                            size={14}
-                          />
+                          <MaterialCommunityIcons color="#0066FF" name="close-circle" size={14} />
                         </Pressable>
                       </View>
                     ))}
@@ -1098,22 +1091,17 @@ export default function InventoryTab() {
                   {!showAddCarForm ? (
                     <Pressable
                       onPress={() => setShowAddCarForm(true)}
-                      className="flex-row items-center border border-dashed border-[#0066FF] py-2 px-3.5 rounded-xl active:bg-blue-50/10 justify-center"
+                      className="flex-row items-center border border-dashed border-[#0066FF] py-2 px-3.5 rounded-xl active:bg-blue-50/10 justify-center w-full"
                     >
-                      <MaterialCommunityIcons
-                        color="#0066FF"
-                        name="plus"
-                        size={16}
-                        className="mr-1"
-                      />
+                      <MaterialCommunityIcons color="#0066FF" name="plus" size={16} className="mr-1" />
                       <Text className="font-poppins-bold text-[12px] text-[#0066FF]">
-                        Add Compatible Vehicle
+                        {t.addCompatibleVehicle}
                       </Text>
                     </Pressable>
                   ) : (
-                    <View className="bg-gray-50 p-4 border border-gray-200 rounded-2xl gap-3">
+                    <View className="bg-gray-50 p-4 border border-gray-200 rounded-2xl gap-3 w-full">
                       {/* Car Brand Select Dropdown */}
-                      <View className="relative z-50">
+                      <View className="relative z-50 w-full">
                         <Pressable
                           onPress={() =>
                             setIsBrandDropdownOpen(!isBrandDropdownOpen)
@@ -1137,7 +1125,7 @@ export default function InventoryTab() {
                         {isBrandDropdownOpen && (
                           <View className="absolute top-[52px] left-0 right-0 max-h-[140px] bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg z-50">
                             <ScrollView nestedScrollEnabled={true}>
-                              {BRANDS.map((brand) => (
+                              {carBrands.map((brand) => (
                                 <Pressable
                                   key={brand}
                                   onPress={() => {
@@ -1160,36 +1148,39 @@ export default function InventoryTab() {
                       <TextInput
                         value={carModel}
                         onChangeText={setCarModel}
-                        placeholder="Model name (e.g. Camry)"
-                        className="bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 font-poppins-semibold text-[14px] text-text-primary"
+                        placeholder={t.carModelPlaceholder}
+                        placeholderTextColor="#9CA3AF"
+                        style={[{ width: "100%", backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#E5E7EB", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontFamily: "Poppins-Semibold", fontSize: 14, color: "#0F172A" }]}
                       />
 
                       {/* Year From & To */}
-                      <View className="flex-row gap-3">
+                      <View className="flex-row gap-3 w-full">
                         <TextInput
                           value={carYearFrom}
                           onChangeText={setCarYearFrom}
-                          placeholder="Year From: 2015"
+                          placeholder={t.yearFromPlaceholder}
+                          placeholderTextColor="#9CA3AF"
                           keyboardType="number-pad"
-                          className="flex-1 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 font-poppins-semibold text-[13px] text-text-primary"
+                          style={[{ flex: 1, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#E5E7EB", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontFamily: "Poppins-Semibold", fontSize: 13, color: "#0F172A" }]}
                         />
                         <TextInput
                           value={carYearTo}
                           onChangeText={(carYearTo) => setCarYearTo(carYearTo)}
-                          placeholder="Year To: 2022"
+                          placeholder={t.yearToPlaceholder}
+                          placeholderTextColor="#9CA3AF"
                           keyboardType="number-pad"
-                          className="flex-1 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 font-poppins-semibold text-[13px] text-text-primary"
+                          style={[{ flex: 1, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#E5E7EB", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontFamily: "Poppins-Semibold", fontSize: 13, color: "#0F172A" }]}
                         />
                       </View>
 
                       {/* Action buttons inside form */}
-                      <View className="flex-row justify-end gap-3 mt-1">
+                      <View className="flex-row justify-end gap-3 mt-1 w-full">
                         <Pressable
                           onPress={() => setShowAddCarForm(false)}
                           className="px-4 py-2 rounded-xl bg-white border border-gray-200 active:bg-gray-50"
                         >
                           <Text className="font-poppins-bold text-[12px] text-text-secondary">
-                            Cancel
+                            {t.cancel}
                           </Text>
                         </Pressable>
                         <Pressable
@@ -1197,7 +1188,7 @@ export default function InventoryTab() {
                           className="px-4 py-2 rounded-xl bg-[#0066FF] active:bg-blue-700"
                         >
                           <Text className="font-poppins-bold text-[12px] text-white">
-                            Add Vehicle
+                            {t.addVehicle}
                           </Text>
                         </Pressable>
                       </View>
@@ -1207,21 +1198,21 @@ export default function InventoryTab() {
               </View>
             </ScrollView>
 
-            <View className="flex-row gap-3 mt-1">
+            <View className="gap-3 mt-1">
               <Pressable
-                onPress={handleDeletePart}
-                className="flex-1 items-center justify-center rounded-[20px] bg-red-50 border border-red-200 py-4 active:bg-red-100 shadow-sm"
+                onPress={handleEditSubmit}
+                className="w-full items-center justify-center rounded-[20px] bg-[#0066FF] py-4 active:bg-blue-700 shadow-md"
               >
-                <Text className="font-poppins-bold text-[16px] text-red-600">
-                  Delete Part
+                <Text className="font-poppins-bold text-[16px] text-white">
+                  {t.saveChanges}
                 </Text>
               </Pressable>
               <Pressable
-                onPress={handleEditSubmit}
-                className="flex-2 items-center justify-center rounded-[20px] bg-[#0066FF] py-4 active:bg-blue-700 shadow-md"
+                onPress={handleDeletePart}
+                className="w-full items-center justify-center rounded-[20px] bg-red-50 border border-red-200 py-4 active:bg-red-100 shadow-sm"
               >
-                <Text className="font-poppins-bold text-[16px] text-white">
-                  Save Changes
+                <Text className="font-poppins-bold text-[16px] text-red-600">
+                  {t.deletePart}
                 </Text>
               </Pressable>
             </View>

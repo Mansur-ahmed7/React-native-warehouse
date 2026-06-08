@@ -31,6 +31,7 @@ export type Part = {
   lowStockThreshold: number;
   compatibleCars: CompatibleCar[];
   status: StockStatus;
+  updated_at?: string;
 };
 
 export type CartItem = {

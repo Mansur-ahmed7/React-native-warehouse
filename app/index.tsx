@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, useWindowDimensions } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -25,21 +25,35 @@ function BottomNav({
   activeTab,
   cartCount,
   onTabChange,
+  language,
 }: {
   activeTab: TabName;
   cartCount: number;
   onTabChange: (tab: TabName) => void;
+  language: string;
 }) {
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const isSmallScreen = width < 375;
 
   return (
     <View
       style={{ paddingBottom: Math.max(insets.bottom, 12) }}
-      className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-3 pt-2 shadow-lg"
+      className={`absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 pt-2 shadow-lg ${
+        isSmallScreen ? "px-1.5" : "px-3"
+      }`}
     >
       <View className="flex-row items-center justify-between">
         {navItems.map((item) => {
           const isActive = activeTab === item.key;
+          let displayLabel = item.label;
+          if (language === "ku") {
+            if (item.key === "inventory") displayLabel = "کۆگا";
+            if (item.key === "scanner") displayLabel = "سکانەر";
+            if (item.key === "sale") displayLabel = "فرۆشتن";
+            if (item.key === "reports") displayLabel = "راپۆرتەکان";
+            if (item.key === "settings") displayLabel = "ڕێکخستنەکان";
+          }
           const showBadge = item.key === "sale" && cartCount > 0;
 
           return (
@@ -63,12 +77,13 @@ function BottomNav({
                 )}
               </View>
               <Text
-                className={`font-poppins-bold text-[10.5px] mt-1 ${
+                className={`font-poppins-bold mt-1 ${
                   isActive ? "text-[#0066FF]" : "text-slate-400"
                 }`}
+                style={{ fontSize: isSmallScreen ? 9.5 : 10.5 }}
                 numberOfLines={1}
               >
-                {item.label}
+                {displayLabel}
               </Text>
               <View
                 className={`w-1.5 h-1.5 rounded-full mt-1 ${
@@ -84,12 +99,19 @@ function BottomNav({
 }
 
 export default function Index() {
-  const { activeTab, showReceipt, cartItemCount, setActiveTab, toast } = useWarehouseStore();
+  const { activeTab, showReceipt, cartItemCount, setActiveTab, toast, settings } = useWarehouseStore();
+  const insets = useSafeAreaInsets();
+
+  const paddingTop = Math.max(insets.top, 16);
+  const bottomNavHeight = 66 + Math.max(insets.bottom, 12);
 
   return (
     <View className="flex-1 bg-[#F6F7FB]">
       <StatusBar backgroundColor="#F6F7FB" style="dark" />
-      <View className="flex-1 pb-[92px] pt-14">
+      <View 
+        style={{ paddingTop, paddingBottom: bottomNavHeight }}
+        className="flex-1"
+      >
         {activeTab === "inventory" && <InventoryTab />}
         {activeTab === "scanner" && <ScannerTab />}
         {activeTab === "sale" && <SaleTab />}
@@ -102,7 +124,8 @@ export default function Index() {
       {toast && (
         <View
           pointerEvents="none"
-          className={`absolute top-14 left-6 right-6 rounded-2xl px-4 py-3 shadow-lg ${
+          style={{ top: Math.max(insets.top, 16) }}
+          className={`absolute left-6 right-6 rounded-2xl px-4 py-3 shadow-lg ${
             toast.isError ? "bg-red-600" : "bg-green-600"
           }`}
         >
@@ -112,7 +135,12 @@ export default function Index() {
         </View>
       )}
 
-      <BottomNav activeTab={activeTab} cartCount={cartItemCount()} onTabChange={setActiveTab} />
+      <BottomNav
+        activeTab={activeTab}
+        cartCount={cartItemCount()}
+        onTabChange={setActiveTab}
+        language={settings.language}
+      />
     </View>
   );
 }

@@ -90,7 +90,7 @@ export default function ReceiptOverlay() {
     activeSaleRecord.items.forEach((item) => {
       const part = parts.find((p) => p.id === item.partId);
       if (part) {
-        text += `• ${part.name} (${part.nameKu || ""})\n`;
+        text += `• ${part.name}\n`;
         text += `  ${item.quantity} x ${item.unitPrice.toLocaleString()} = ${(item.quantity * item.unitPrice).toLocaleString()} IQD\n`;
       }
     });
@@ -123,7 +123,6 @@ export default function ReceiptOverlay() {
             <div class="item-row">
               <div class="item-details">
                 <div class="item-name">${part.name}</div>
-                ${part.nameKu ? `<div class="item-kurdish">${part.nameKu}</div>` : ""}
               </div>
               <div class="item-price">
                 ${item.quantity} × ${item.unitPrice.toLocaleString()} = ${(item.quantity * item.unitPrice).toLocaleString()} IQD
@@ -500,11 +499,6 @@ export default function ReceiptOverlay() {
                         >
                           {part.name}
                         </Text>
-                        {part.nameKu && (
-                          <Text className="font-poppins-semibold text-[11px] text-gray-400 mt-0.5 leading-[13px]">
-                            {part.nameKu}
-                          </Text>
-                        )}
                       </View>
                     </View>
 

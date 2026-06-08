@@ -5,6 +5,7 @@ import {
   Pressable,
   ScrollView,
   TextInput,
+  StyleSheet,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
@@ -23,7 +24,33 @@ export default function SaleTab() {
     clearCart,
     setActiveTab,
     triggerToast,
+    settings,
   } = useWarehouseStore();
+
+  const isKu = settings.language === "ku";
+
+  // Kurdish Localized Strings
+  const t = {
+    cartEmpty: isKu ? "عەرەبانەکەت بەتاڵە" : "Your cart is empty",
+    cartEmptyDesc: isKu ? "بارکۆدەکان سکان بکە یان کاڵاکان لە بەشی سکانەردا بگەڕێ بۆ دروستکردنی فرۆشتن بە خێرایی." : "Scan barcodes or search items under the Scanner tab to build a sale instantly.",
+    goScanner: isKu ? "بڕۆ بۆ سکانەر" : "Go to Scanner",
+    title: isKu ? "فرۆشتن" : "Sale",
+    subtitle: isKu ? "کاڵاکان بۆ فرۆشتن زیاد بکە" : "Add items to the sale",
+    scanBarcode: isKu ? "سکانکردنی بارکۆد" : "Scan Barcode",
+    searchItem: isKu ? "گەڕان بۆ کاڵا" : "Search Item",
+    itemsInSale: isKu ? "کاڵاکانی ناو لیستەکە" : "Items in Sale",
+    items: isKu ? "کاڵاکان:" : "Items:",
+    subtotal: isKu ? "کۆی گشتی:" : "Subtotal:",
+    discount: isKu ? "داشکاندن:" : "Discount:",
+    total: isKu ? "کۆی کۆتایی:" : "TOTAL:",
+    amountReceived: isKu ? "بڕی پارەی وەرگیراو" : "Amount Received",
+    changeToReturn: isKu ? "بڕی پارەی گێڕاوە:" : "Change to Return:",
+    completeSale: isKu ? "تەواوکردنی فرۆشتن و چاپکردنی پسوولە" : "Complete Sale & Print Receipt",
+    saveDraft: isKu ? "پاشەکەوتکردن وەک ڕەشنووس" : "Save as Draft",
+    typesUnits: (types: number, units: number) => isKu ? `${types} جۆر، ${units} دانە` : `${types} types, ${units} units`,
+    insufficientAmount: isKu ? "✗ بڕی پارەی وەرگیراو بەس نییە" : "✗ Insufficient amount received",
+    saleSavedDraft: isKu ? "✓ فرۆشتن وەک ڕەشنووس پاشەکەوت کرا" : "✓ Sale saved as draft",
+  };
 
   // Local Checkout States
   const [amountPaidIQD, setAmountPaidIQD] = useState("");
@@ -55,17 +82,17 @@ export default function SaleTab() {
           <MaterialCommunityIcons color="#0066FF" name="shopping-outline" size={42} />
         </View>
         <Text className="font-poppins-bold text-[20px] text-text-primary text-center">
-          Your cart is empty
+          {t.cartEmpty}
         </Text>
         <Text className="font-poppins-medium text-[13.5px] text-text-secondary mt-1.5 text-center px-10 leading-[20px]">
-          Scan barcodes or search items under the Scanner tab to build a sale instantly.
+          {t.cartEmptyDesc}
         </Text>
         <Pressable
           onPress={() => setActiveTab("scanner")}
           className="mt-6 bg-[#0066FF] px-7 py-3 rounded-full active:bg-blue-700 shadow-md"
         >
           <Text className="font-poppins-bold text-[14px] text-white">
-            Go to Scanner
+            {t.goScanner}
           </Text>
         </Pressable>
       </View>
@@ -85,7 +112,7 @@ export default function SaleTab() {
   // Complete Sale Checkout modifier
   const handleCompleteCheckout = () => {
     if (cleanAmountPaid < cartTotal) {
-      triggerToast("✗ Insufficient amount received", true);
+      triggerToast(t.insufficientAmount, true);
       return;
     }
     // complete sale in store
@@ -98,36 +125,38 @@ export default function SaleTab() {
 
   return (
     <View className="flex-1 px-6">
-      <View className="mb-4">
-        <Text className="font-poppins-bold text-[34px] text-text-primary leading-[42px]">
-          Sale / فرۆشتن
+      <View className="mb-4" style={isKu ? styles.rtlAlign : undefined}>
+        <Text className="font-poppins-bold text-[34px] text-text-primary leading-[42px]" style={isKu ? styles.rtlText : undefined}>
+          {t.title}
         </Text>
-        <Text className="font-poppins-semibold text-[13.5px] text-gray-400 mt-1">
-          Add items to the sale
+        <Text className="font-poppins-semibold text-[13.5px] text-gray-400 mt-1" style={isKu ? styles.rtlText : undefined}>
+          {t.subtitle}
         </Text>
       </View>
 
       {/* Quick navigation Scanner row */}
-      <View className="flex-row gap-3.5 mb-5">
+      <View className="flex-row gap-3.5 mb-5" style={isKu ? styles.rtlRow : undefined}>
         <Pressable
           onPress={() => setActiveTab("scanner")}
           className="flex-1 flex-row items-center justify-center py-3 bg-[#0066FF]/5 border border-[#0066FF]/20 rounded-xl active:bg-[#0066FF]/10"
+          style={isKu ? styles.rtlRow : undefined}
         >
-          <MaterialCommunityIcons color="#0066FF" name="barcode-scan" size={18} className="mr-2" />
-          <Text className="font-poppins-bold text-[14px] text-[#0066FF]">Scan Barcode</Text>
+          <MaterialCommunityIcons color="#0066FF" name="barcode-scan" size={18} style={isKu ? { marginLeft: 8 } : { marginRight: 8 }} />
+          <Text className="font-poppins-bold text-[14px] text-[#0066FF]">{t.scanBarcode}</Text>
         </Pressable>
         <Pressable
           onPress={() => setActiveTab("scanner")}
           className="flex-1 flex-row items-center justify-center py-3 bg-white border border-gray-200 rounded-xl active:bg-gray-50"
+          style={isKu ? styles.rtlRow : undefined}
         >
-          <MaterialCommunityIcons color="#6B7280" name="magnify" size={18} className="mr-2" />
-          <Text className="font-poppins-bold text-[14px] text-text-secondary">Search Item</Text>
+          <MaterialCommunityIcons color="#6B7280" name="magnify" size={18} style={isKu ? { marginLeft: 8 } : { marginRight: 8 }} />
+          <Text className="font-poppins-bold text-[14px] text-text-secondary">{t.searchItem}</Text>
         </Pressable>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
-        <Text className="font-poppins-bold text-[14.5px] text-text-primary mb-3">
-          Items in Sale
+        <Text className="font-poppins-bold text-[14.5px] text-text-primary mb-3" style={isKu ? styles.rtlText : undefined}>
+          {t.itemsInSale}
         </Text>
 
         {/* Cart items cards list */}
@@ -141,10 +170,14 @@ export default function SaleTab() {
               <View
                 key={item.partId}
                 className="flex-row bg-white rounded-2xl p-3 border border-gray-150 shadow-sm items-center justify-between"
+                style={isKu ? styles.rtlRow : undefined}
               >
-                <View className="flex-row items-center flex-1 pr-3">
+                <View className="flex-row items-center flex-1 pr-3" style={[isKu ? styles.rtlRow : undefined, isKu ? { paddingLeft: 12, paddingRight: 0 } : { paddingRight: 12 }]}>
                   {/* Photo thumbnail */}
-                  <View className="w-12 h-12 rounded-xl bg-gray-50 mr-3 items-center justify-center overflow-hidden border border-gray-100">
+                  <View
+                    className="w-12 h-12 rounded-xl bg-gray-50 items-center justify-center overflow-hidden border border-gray-100"
+                    style={isKu ? { marginLeft: 12 } : { marginRight: 12 }}
+                  >
                     {partImg ? (
                       <Image source={partImg} style={{ width: "100%", height: "100%" }} />
                     ) : (
@@ -153,22 +186,17 @@ export default function SaleTab() {
                       </Text>
                     )}
                   </View>
-                  <View className="flex-1">
-                    <Text className="font-poppins-bold text-[14.5px] text-text-primary" numberOfLines={1}>
+                  <View className="flex-1" style={isKu ? styles.rtlAlign : undefined}>
+                    <Text className="font-poppins-bold text-[14.5px] text-text-primary" numberOfLines={1} style={isKu ? styles.rtlText : undefined}>
                       {part.name}
                     </Text>
-                    {part.nameKu && (
-                      <Text className="font-poppins-semibold text-[11.5px] text-gray-400 leading-[14px] mt-0.5">
-                        {part.nameKu}
-                      </Text>
-                    )}
                   </View>
                 </View>
 
                 {/* Quantity Stepper Adjusters & Trash delete icon */}
-                <View className="flex-row items-center gap-3">
-                  <View className="items-end">
-                    <View className="flex-row items-center bg-gray-50 rounded-xl px-2 py-1.5 border border-gray-100">
+                <View className="flex-row items-center gap-3" style={isKu ? styles.rtlRow : undefined}>
+                  <View className="items-end" style={isKu ? styles.rtlAlign : undefined}>
+                    <View className="flex-row items-center bg-gray-50 rounded-xl px-2 py-1.5 border border-gray-100" style={isKu ? styles.rtlRow : undefined}>
                       <Pressable
                         onPress={() => updateCartQty(item.partId, item.quantity - 1)}
                         className="w-7 h-7 rounded-lg bg-white items-center justify-center border border-gray-100 active:bg-gray-100"
@@ -185,7 +213,7 @@ export default function SaleTab() {
                         <MaterialCommunityIcons color="#0066FF" name="plus" size={14} />
                       </Pressable>
                     </View>
-                    <Text className="font-poppins-bold text-[13px] text-text-primary mt-1.5 mr-1">
+                    <Text className="font-poppins-bold text-[13px] text-text-primary mt-1.5" style={[isKu ? { marginLeft: 4 } : { marginRight: 4 }, isKu ? styles.rtlText : undefined]}>
                       {(item.unitPrice * item.quantity).toLocaleString()} IQD
                     </Text>
                   </View>
@@ -204,19 +232,19 @@ export default function SaleTab() {
 
         {/* Totals Summary Calculations card */}
         <View className="bg-white rounded-[24px] p-5 border border-gray-200 shadow-sm mb-5 gap-3.5">
-          <View className="flex-row justify-between">
-            <Text className="font-poppins-semibold text-[14px] text-text-secondary">Items:</Text>
-            <Text className="font-poppins-bold text-[14px] text-text-primary">{totalTypes} types, {totalUnits} units</Text>
+          <View className="flex-row justify-between" style={isKu ? styles.rtlRow : undefined}>
+            <Text className="font-poppins-semibold text-[14px] text-text-secondary" style={isKu ? styles.rtlText : undefined}>{t.items}</Text>
+            <Text className="font-poppins-bold text-[14px] text-text-primary" style={isKu ? styles.rtlText : undefined}>{t.typesUnits(totalTypes, totalUnits)}</Text>
           </View>
-          <View className="flex-row justify-between">
-            <Text className="font-poppins-semibold text-[14px] text-text-secondary">Subtotal:</Text>
-            <Text className="font-poppins-bold text-[14px] text-text-primary">{cartSubtotal.toLocaleString()} IQD</Text>
+          <View className="flex-row justify-between" style={isKu ? styles.rtlRow : undefined}>
+            <Text className="font-poppins-semibold text-[14px] text-text-secondary" style={isKu ? styles.rtlText : undefined}>{t.subtotal}</Text>
+            <Text className="font-poppins-bold text-[14px] text-text-primary" style={isKu ? styles.rtlText : undefined}>{cartSubtotal.toLocaleString()} IQD</Text>
           </View>
 
           {/* Commas Formatted Discount Input box */}
-          <View className="flex-row justify-between items-center">
-            <Text className="font-poppins-semibold text-[14px] text-text-secondary">Discount:</Text>
-            <View className="flex-row items-center bg-[#F6F7FB] border border-gray-200 rounded-xl px-3 py-1.5 w-28">
+          <View className="flex-row justify-between items-center" style={isKu ? styles.rtlRow : undefined}>
+            <Text className="font-poppins-semibold text-[14px] text-text-secondary" style={isKu ? styles.rtlText : undefined}>{t.discount}</Text>
+            <View className="flex-row items-center bg-[#F6F7FB] border border-gray-200 rounded-xl px-3 py-1.5 w-28" style={isKu ? styles.rtlRow : undefined}>
               <TextInput
                 value={discountIQD}
                 onChangeText={(text) => {
@@ -229,9 +257,10 @@ export default function SaleTab() {
                   fontFamily: "Poppins-Bold",
                   fontSize: 14,
                   color: "#0F172A",
-                  textAlign: "right",
+                  textAlign: isKu ? "left" : "right",
                   padding: 0,
-                  marginRight: 6,
+                  marginRight: isKu ? 0 : 6,
+                  marginLeft: isKu ? 6 : 0,
                 }}
               />
               <Text className="font-poppins-bold text-[11px] text-gray-400">IQD</Text>
@@ -239,18 +268,18 @@ export default function SaleTab() {
           </View>
 
           <View className="w-full h-[1px] bg-gray-100 my-0.5" />
-          <View className="flex-row justify-between items-center">
-            <Text className="font-poppins-bold text-[16px] text-text-primary">TOTAL:</Text>
-            <Text className="font-poppins-bold text-[22px] text-[#0066FF]">{cartTotal.toLocaleString()} IQD</Text>
+          <View className="flex-row justify-between items-center" style={isKu ? styles.rtlRow : undefined}>
+            <Text className="font-poppins-bold text-[16px] text-text-primary" style={isKu ? styles.rtlText : undefined}>{t.total}</Text>
+            <Text className="font-poppins-bold text-[22px] text-[#0066FF]" style={isKu ? styles.rtlText : undefined}>{cartTotal.toLocaleString()} IQD</Text>
           </View>
         </View>
 
         {/* Amount Received Box with Formatted Commas */}
         <View className="mb-5">
-          <Text className="font-poppins-bold text-[12.5px] text-gray-400 uppercase tracking-wider mb-2">
-            Amount Received / پڕی پارەی وەرگیراو
+          <Text className="font-poppins-bold text-[12.5px] text-gray-400 uppercase tracking-wider mb-2" style={isKu ? styles.rtlText : undefined}>
+            {t.amountReceived}
           </Text>
-          <View className="w-full flex-row items-center bg-white rounded-2xl px-4 py-3.5 border border-gray-200 shadow-sm">
+          <View className="w-full flex-row items-center bg-white rounded-2xl px-4 py-3.5 border border-gray-200 shadow-sm" style={isKu ? styles.rtlRow : undefined}>
             <TextInput
               value={amountPaidIQD}
               onChangeText={(text) => {
@@ -267,22 +296,29 @@ export default function SaleTab() {
                 color: "#0F172A",
                 padding: 0,
                 margin: 0,
+                textAlign: isKu ? "right" : "left",
               }}
             />
-            <View className="bg-gray-50 border-l border-gray-100 px-4 py-2 ml-2 items-center justify-center">
+            <View
+              className="bg-gray-50 px-4 py-2 items-center justify-center"
+              style={isKu ? { borderRightWidth: 1, borderRightColor: "#F3F4F6", marginRight: 8 } : { borderLeftWidth: 1, borderLeftColor: "#F3F4F6", marginLeft: 8 }}
+            >
               <Text className="font-poppins-bold text-[14.5px] text-gray-400">IQD</Text>
             </View>
           </View>
         </View>
 
         {/* Green Change to Return banner */}
-        <View className="w-full flex-row items-center justify-between bg-green-50 border border-green-200 rounded-xl px-4 py-3.5 mb-6">
-          <View className="flex-row items-center">
-            <View className="w-7 h-7 rounded-full bg-green-500 items-center justify-center mr-2.5">
+        <View className="w-full flex-row items-center justify-between bg-green-50 border border-green-200 rounded-xl px-4 py-3.5 mb-6" style={isKu ? styles.rtlRow : undefined}>
+          <View className="flex-row items-center" style={isKu ? styles.rtlRow : undefined}>
+            <View
+              className="w-7 h-7 rounded-full bg-green-500 items-center justify-center"
+              style={isKu ? { marginLeft: 10 } : { marginRight: 10 }}
+            >
               <MaterialCommunityIcons color="#FFFFFF" name="arrow-up-right" size={16} />
             </View>
             <Text className="font-poppins-bold text-[14.5px] text-green-700">
-              Change to Return:
+              {t.changeToReturn}
             </Text>
           </View>
           <Text className="font-poppins-bold text-[17px] text-[#10B981]">
@@ -295,10 +331,11 @@ export default function SaleTab() {
           <Pressable
             onPress={handleCompleteCheckout}
             className="w-full flex-row items-center justify-center rounded-2xl bg-[#0066FF] py-4.5 active:bg-blue-700 shadow-md"
+            style={isKu ? styles.rtlRow : undefined}
           >
-            <MaterialCommunityIcons color="#FFFFFF" name="printer-outline" size={20} className="mr-2" />
+            <MaterialCommunityIcons color="#FFFFFF" name="printer-outline" size={20} style={isKu ? { marginLeft: 8 } : { marginRight: 8 }} />
             <Text className="font-poppins-bold text-[16px] text-white">
-              Complete Sale & Print Receipt
+              {t.completeSale}
             </Text>
           </Pressable>
 
@@ -307,13 +344,14 @@ export default function SaleTab() {
               clearCart();
               setAmountPaidIQD("");
               setDiscountIQD("0");
-              triggerToast("✓ Sale saved as draft");
+              triggerToast(t.saleSavedDraft);
             }}
             className="w-full flex-row items-center justify-center rounded-2xl bg-white border-2 border-[#0066FF] py-4 active:bg-blue-50/10"
+            style={isKu ? styles.rtlRow : undefined}
           >
-            <MaterialCommunityIcons color="#0066FF" name="file-document-outline" size={20} className="mr-2" />
+            <MaterialCommunityIcons color="#0066FF" name="file-document-outline" size={20} style={isKu ? { marginLeft: 8 } : { marginRight: 8 }} />
             <Text className="font-poppins-bold text-[15.5px] text-[#0066FF]">
-              Save as Draft
+              {t.saveDraft}
             </Text>
           </Pressable>
         </View>
@@ -321,3 +359,17 @@ export default function SaleTab() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  rtlRow: {
+    flexDirection: "row-reverse",
+  },
+  rtlText: {
+    textAlign: "right",
+    writingDirection: "rtl",
+  },
+  rtlAlign: {
+    alignItems: "flex-end",
+  },
+});
+

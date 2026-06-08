@@ -59,12 +59,12 @@ const md = fs.readFileSync(inputPath, "utf8");
 // Keep headings readable.
 const plain = sanitizeForWinAnsi(
   md
-  .replace(/^\s*#+\s*/gm, "")
-  .replace(/^\s*>\s?/gm, "")
-  .replace(/\*\*(.*?)\*\*/g, "$1")
-  .replace(/`([^`]+)`/g, "$1")
-  .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1 ($2)")
-  .trimEnd()
+    .replace(/^\s*#+\s*/gm, "")
+    .replace(/^\s*>\s?/gm, "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1 ($2)")
+    .trimEnd(),
 );
 
 const pdfDoc = await PDFDocument.create();
